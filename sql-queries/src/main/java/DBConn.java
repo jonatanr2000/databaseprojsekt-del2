@@ -12,8 +12,8 @@ public abstract class DBConn {
             Class.forName("com.mysql.cj.jdbc.Driver");
             // Properties for user and password.
             Properties p = new Properties();
-            p.put("user", "myuser");
-            p.put("password", "mypassword");
+            p.put("user", "root");
+            p.put("password", "thzx12");
             conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1/piazza?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false",p);
         } catch (Exception e)
         {

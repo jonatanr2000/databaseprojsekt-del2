@@ -9,8 +9,8 @@ public abstract class User {
     protected String firstname;
     protected String surname;
     protected LocalDateTime lastActive;
-    protected ArrayList<post> views = new ArrayList<>();
-    protected ArrayList<post> likes = new ArrayList<>();
+    protected ArrayList<Post> views = new ArrayList<>();
+    protected ArrayList<Post> likes = new ArrayList<>();
 
 
     public User(String email, String password, String firstname, String surname, LocalDateTime lastActive) {
@@ -22,13 +22,13 @@ public abstract class User {
     }
 
 
-    public void view(post viewedPost) {
+    public void view(Post viewedPost) {
         if (!views.contains(viewedPost)) {
             views.add(viewedPost);
         }
     }
 
-    public void like (post likedPost) {
+    public void like (Post likedPost) {
 
     }
 
