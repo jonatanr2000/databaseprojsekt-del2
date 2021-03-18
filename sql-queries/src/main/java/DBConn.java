@@ -13,7 +13,7 @@ public abstract class DBConn {
             // Properties for user and password.
             Properties p = new Properties();
             p.put("user", "root");
-            p.put("password", "thzx12");
+            p.put("password", "password");
             conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1/piazza?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false",p);
         } catch (Exception e)
         {
