@@ -1,7 +1,7 @@
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public abstract class User {
+public class User {
 
 
     protected String email;
@@ -11,14 +11,16 @@ public abstract class User {
     protected LocalDateTime lastActive;
     protected ArrayList<Post> views = new ArrayList<>();
     protected ArrayList<Post> likes = new ArrayList<>();
+    protected Boolean isInstrucor;
 
 
-    public User(String email, String password, String firstname, String surname, LocalDateTime lastActive) {
+    public User(String email, String password, String firstname, String surname, LocalDateTime lastActive, Boolean isInstructor) {
         this.email = email;
         this.password = password;
         this.firstname = firstname;
         this.surname = surname;
         this.lastActive = lastActive;
+        this.isInstrucor = isInstructor;
     }
 
 
