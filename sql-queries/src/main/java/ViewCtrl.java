@@ -120,7 +120,8 @@ public class ViewCtrl extends DBConn{
 
         ViewCtrl viewCtrl = new ViewCtrl();
         viewCtrl.connect();
-        viewCtrl.view("ha@gmail.com", 1);
+        //viewCtrl.view("ha@gmail.com", 2);
+        viewCtrl.getLike();
         viewCtrl.regLike();
 
     }

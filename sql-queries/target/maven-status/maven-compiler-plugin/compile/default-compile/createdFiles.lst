@@ -1,2 +1,14 @@
-hei.class
+RegMaalCtrl.class
+ActiveDomainObject.class
+Tag.class
 App.class
+DBConn.class
+PiazzaCtrl.class
+Folder.class
+Student.class
+ViewCtrl.class
+Post.class
+Reg.class
+User.class
+Thread.class
+Instructor.class
