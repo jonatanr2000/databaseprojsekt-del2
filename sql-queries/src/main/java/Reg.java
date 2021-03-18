@@ -1,4 +1,4 @@
-static class Reg {
+public class Reg {
 
     public int sekv;
     public int reg;
