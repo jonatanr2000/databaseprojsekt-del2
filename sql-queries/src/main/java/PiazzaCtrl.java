@@ -1,8 +1,6 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public class PiazzaCtrl extends DBConn{
 
@@ -23,7 +21,7 @@ public class PiazzaCtrl extends DBConn{
         this.email = email;
         this.postId = postId;
         try {
-            regStatement = conn.prepareStatement("INSERT INTO likes VALUES ( (?), (?) )");
+            regStatement = conn.prepareStatement("INSERT INTO piazza.likes VALUES ( (?), (?) )");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("db error during prepare of insert into Reg");
@@ -43,7 +41,7 @@ public class PiazzaCtrl extends DBConn{
 
     public void getLikes () {
         try {
-            PreparedStatement newregStatement = conn.prepareStatement("SELECT * from likes");
+            PreparedStatement newregStatement = conn.prepareStatement("SELECT * from piazza.likes");
             ResultSet rs = newregStatement.executeQuery();
             rs.next();
     } catch (Exception e) {
@@ -54,9 +52,10 @@ public class PiazzaCtrl extends DBConn{
 
     public void login (String email, String password) {
         try {
-            PreparedStatement newregStatement = conn.prepareStatement("SELECT * from users where Email = (?)");
+            PreparedStatement newregStatement = conn.prepareStatement("SELECT * from piazza.users where users.Email = (?)");
             try {
                 newregStatement.setString(1, email);
+
                 ResultSet rs = newregStatement.executeQuery();
 
                 if (rs.next()) {
@@ -80,9 +79,6 @@ public class PiazzaCtrl extends DBConn{
                 e.printStackTrace();
                 System.out.println("db error during insert of Like user= "+email+" postNr="+postId);
             }
-
-
-
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("db error during insert of Like user= "+email+" postNr="+postId);
@@ -90,19 +86,29 @@ public class PiazzaCtrl extends DBConn{
     }
 
 
-    public void getPost() {
-        if 
-        if (this.user.isInstrucor) {
-            try {
-                PreparedStatement newregStatement = conn.prepareStatement("SELECT * from likes");
-                ResultSet rs = newregStatement.executeQuery();
-                rs.next();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("db error during insert of Like user= "+email+" postNr="+postId);
+    public void getPosts() {
+        if (this.user != null) {
+            if (this.user.isInstrucor) {
+                try {
+                    PreparedStatement newregStatement = conn.prepareStatement("SELECT piazza.users.Email, COUNT(DISTINCT piazza.view.Thread_Id), COUNT(DISTINCT piazza.post.Post_Id) " +
+                            "FROM (piazza.users LEFT JOIN piazza.view ON users.Email = view.Email) LEFT JOIN piazza.post ON users.Email = post.Creator " +
+                            "GROUP BY piazza.users.Email " +
+                            "ORDER BY COUNT(DISTINCT view.Thread_Id) DESC");
+                    ResultSet rs = newregStatement.executeQuery();
+
+                    while(rs.next()) {
+                        System.out.println(rs.getString(1) + " has seen: " + rs.getInt(2) + " threads, and has created: " + rs.getInt(3) + " posts.");
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("db error during insert of Like user= " + user.email + " postNr=" + postId);
+                }
+            } else {
+                System.out.println("You must be an instructor to see this.");
             }
-        }else {
-            System.out.println("You must be an instructor to see this.");
+        } else {
+            System.out.println("You must be logged in to see this content");
         }
     }
 
@@ -111,6 +117,7 @@ public class PiazzaCtrl extends DBConn{
         PiazzaCtrl viewCtrl = new PiazzaCtrl();
         viewCtrl.connect();
         viewCtrl.login("ha@gmail.com", "ok");
+        viewCtrl.getPosts();
 
     }
 }
