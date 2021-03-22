@@ -1,5 +1,6 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class PiazzaCtrl extends DBConn{
@@ -10,11 +11,10 @@ public class PiazzaCtrl extends DBConn{
 
 
     // Faktiske attributes vi skal ha
-    private User user;
+    public User user;
 
     public PiazzaCtrl() {
-
-
+        this.connect();
     }
 
     public void view(String email, int postId) {
@@ -50,6 +50,11 @@ public class PiazzaCtrl extends DBConn{
         }
     }
 
+    /**
+     * Searches the database for the user and checks that the found user has the same password as the one given in.
+     * @param email String email of the user that wants to log in
+     * @param password String used to authenticate the user
+     */
     public void login (String email, String password) {
         try {
             PreparedStatement newregStatement = conn.prepareStatement("SELECT * from piazza.users where users.Email = (?)");
@@ -68,6 +73,7 @@ public class PiazzaCtrl extends DBConn{
                                 rs.getObject("Last_Active", LocalDateTime.class),
                                 rs.getBoolean("Is_Instructor"));
                         System.out.println("Welcome user" + this.user.email);
+                        updateLastActive(email, LocalDateTime.now());
                     } else {
                         System.out.println("Password is wrong");
                     }
@@ -85,7 +91,26 @@ public class PiazzaCtrl extends DBConn{
         }
     }
 
+    /**
+     * Updates the last active field in the given user.
+     * @param email String of the user who should be updated.
+     * @param when LocalDateTime of when the user was active.
+     */
+    private void updateLastActive(String email, LocalDateTime when) {
+        try {
+            PreparedStatement newregStatement = conn.prepareStatement("UPDATE piazza.users set Last_Active= (?) WHERE Email = (?)");
+            newregStatement.setObject(1, when);
+            newregStatement.setString(2, email);
+            newregStatement.execute();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
 
+    /**
+     * Prints out each user, how many threads they have seen and how many posts they have created.
+     * This is only available for instructors
+     */
     public void getPosts() {
         if (this.user != null) {
             if (this.user.isInstrucor) {
@@ -118,7 +143,6 @@ public class PiazzaCtrl extends DBConn{
         viewCtrl.connect();
         viewCtrl.login("ha@gmail.com", "ok");
         viewCtrl.getPosts();
-
     }
 }
 
