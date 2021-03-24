@@ -13,6 +13,7 @@ public class PiazzaCtrl extends DBConn{
     // Faktiske attributes vi skal ha
     public User user;
 
+    //Create and connect the controller
     public PiazzaCtrl() {
         this.connect();
     }
@@ -57,6 +58,7 @@ public class PiazzaCtrl extends DBConn{
      */
     public void login (String email, String password) {
         try {
+            //Finds user with matching email
             PreparedStatement newregStatement = conn.prepareStatement("SELECT * from piazza.users where users.Email = (?)");
             try {
                 newregStatement.setString(1, email);
@@ -64,7 +66,9 @@ public class PiazzaCtrl extends DBConn{
                 ResultSet rs = newregStatement.executeQuery();
 
                 if (rs.next()) {
+                    //Check that the passwords are matching
                     if (rs.getString("Password").matches(password)) {
+                        //logs the user in and updates
                         this.user = new User(
                                 email,
                                 password,
@@ -112,15 +116,20 @@ public class PiazzaCtrl extends DBConn{
      * This is only available for instructors
      */
     public void getPosts() {
+        //Checks that the user is logged in and is an instructor
         if (this.user != null) {
             if (this.user.isInstrucor) {
                 try {
+                    //Left joins user to view and the left joins post.
+                    //This will result in "cross-join"ing view and post so we will only select distinct from those.
+                    //order by number of views descending.
                     PreparedStatement newregStatement = conn.prepareStatement("SELECT piazza.users.Email, COUNT(DISTINCT piazza.view.Thread_Id), COUNT(DISTINCT piazza.post.Post_Id) " +
                             "FROM (piazza.users LEFT JOIN piazza.view ON users.Email = view.Email) LEFT JOIN piazza.post ON users.Email = post.Creator " +
                             "GROUP BY piazza.users.Email " +
                             "ORDER BY COUNT(DISTINCT view.Thread_Id) DESC");
                     ResultSet rs = newregStatement.executeQuery();
 
+                    //prints out the results
                     while(rs.next()) {
                         System.out.println(rs.getString(1) + " has seen: " + rs.getInt(2) + " threads, and has created: " + rs.getInt(3) + " posts.");
                     }
