@@ -77,7 +77,7 @@ public class App {
     }
 
     private void view_threads() throws InterruptedException {
-        List<Integer> threadIds = makePost.viewPost();
+        List<Integer> threadIds = makePost.showThreads();
         String action = null;
         print("go_back \t view_post<id>");
         action = scanner.nextLine();
@@ -89,17 +89,27 @@ public class App {
     }
 
     private void view_thread(int id) throws InterruptedException {
-        makePost.viewThread(id);
+        int postID = makePost.showPostsInThread(id);
         print("go_back \t make_reply<id>");
         String action = scanner.nextLine();
         if(action.contains("make_reply")) {
-            int post_id = 
             make_reply(id);
         }
     }
 
-    private void make_reply(int id) {
-        piazzaCtrl.checkReply(id);
+    private void make_reply(int id) throws InterruptedException {
+        print("text: ");
+        String text = scanner.nextLine();
+        String colour = "";
+        if (user.isInstrucor) {
+            colour = "orange";
+        } else {
+            colour = "green";
+        }
+        makePost.makePost(text, colour, "reply", id, user.email);
+
+        print("creating reply:"  + " " + Integer.toString(id) + " " + " " + text);
+        //piazzaCtrl.checkReply(id);
     }
 
     /**
