@@ -5,10 +5,14 @@ import java.util.concurrent.TimeUnit;
 
 public class App {
 
-    public App() {
+    PiazzaCtrl piazzaCtrl = new PiazzaCtrl();
 
-    }
 
+    /**
+     * Prints the text in a slow fashion, adds a nice feel.
+     * @param text String to be printed out.
+     * @throws InterruptedException if timeout is interrupted.
+     */
     public void print(String text) throws InterruptedException {
         for (int i = 0; i < text.length(); i++) {
             System.out.print(text.charAt(i));
@@ -17,8 +21,12 @@ public class App {
         System.out.println();
     }
 
+
+    /**
+     * runs the application
+     * @throws InterruptedException if the print function is interrupted.
+     */
     public void run() throws InterruptedException {
-        PiazzaCtrl piazzaCtrl = new PiazzaCtrl();
         Scanner scanner = new Scanner(System.in);
         print("Welcome to low budget PIAZZA \n " +
                 "Please log in.");
@@ -40,7 +48,7 @@ public class App {
             action = scanner.nextLine();
             switch(action) {
                 case "create post": {
-                    //Do nothing
+                    this.create_post();
                 }
                 break;
                 case "view posts": {
@@ -64,6 +72,12 @@ public class App {
 
     }
 
+    /**
+     * Guides the user in creating a post.
+     */
+    private void create_post() {
+        piazzaCtrl.show
+    }
 
     public static void main(String[] args) throws InterruptedException {
         App app = new App();
