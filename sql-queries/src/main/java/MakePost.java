@@ -5,8 +5,8 @@ import java.sql.SQLException;
 public class MakePost extends DBConn {
 
     /**
-     * 2. A student makes a post belonging to the folder “Exam” and tagged with “Question”. Input to
-     * the use case should be a post and the texts “Exam” and “Question”.
+     * 2. A student makes a post belonging to the folder Exam and tagged with Question. Input to
+     * the use case should be a post and the texts Exam and Question.
      */
 
     private String folder;
@@ -122,9 +122,8 @@ public class MakePost extends DBConn {
         //mp.showFolders();
         //mp.makeTag("vanskelig");
         mp.makeThread("Difficult question 3", 2);
-        System.out.println(mp.threadIdLatest);
-        mp.makePost("Really hard task.", "rod", "post", mp.threadIdLatest, "ha@gmail.com");
-        mp.connectTagsAndPost(mp.postIdLatest, "exam", "TDT4109", "hellothere");
+        mp.makePost("Really hard task.", "red", "post", mp.threadIdLatest, "ha@gmail.com");
+        mp.connectTagsAndPost(mp.postIdLatest, "exam", "whatup", "hellothere");
     }
 
 }

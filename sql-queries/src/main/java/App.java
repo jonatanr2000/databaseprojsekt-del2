@@ -48,7 +48,7 @@ public class App {
             action = scanner.nextLine();
             switch(action) {
                 case "create post": {
-                    this.create_post();
+                    //this.create_post();
                 }
                 break;
                 case "view posts": {
@@ -75,9 +75,9 @@ public class App {
     /**
      * Guides the user in creating a post.
      */
-    private void create_post() {
+    /*private void create_post() {
         piazzaCtrl.show
-    }
+    }*/
 
     public static void main(String[] args) throws InterruptedException {
         App app = new App();
