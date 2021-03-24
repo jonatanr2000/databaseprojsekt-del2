@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -6,6 +7,9 @@ import java.util.concurrent.TimeUnit;
 public class App {
 
     PiazzaCtrl piazzaCtrl = new PiazzaCtrl();
+    MakePost makePost = new MakePost();
+    Scanner scanner = new Scanner(System.in);
+    User user;
 
 
     /**
@@ -26,8 +30,7 @@ public class App {
      * runs the application
      * @throws InterruptedException if the print function is interrupted.
      */
-    public void run() throws InterruptedException {
-        Scanner scanner = new Scanner(System.in);
+    public void run() throws InterruptedException, SQLException {
         print("Welcome to low budget PIAZZA \n " +
                 "Please log in.");
         while (piazzaCtrl.user == null) {
@@ -36,7 +39,7 @@ public class App {
             print("Password: ");
             String password = scanner.nextLine().trim();
             print("logging on with, email: " + email + " and password " + password);
-            piazzaCtrl.login(email, password);
+            user = piazzaCtrl.login(email, password);
         }
 
         print("Welcome to the main hub.");
@@ -75,11 +78,27 @@ public class App {
     /**
      * Guides the user in creating a post.
      */
-    private void create_post() {
-        piazzaCtrl.show
+    private void create_post() throws InterruptedException, SQLException {
+        makePost.showFolders();
+        print("Please choose folder by id");
+        int folderid = Integer.parseInt(scanner.nextLine());
+        print("Title: ");
+        String title = scanner.nextLine();
+        print("text: ");
+        String text = scanner.nextLine();
+
+        makePost.makeThread(title, folderid);
+        makePost.makePost(text, "red", "post", makePost.getThreadIdLatest(), user.email);
+        print("Please enter the tags separated by 'space'.");
+        String[] tags = scanner.nextLine().toLowerCase(Locale.ROOT).split(" ");
+        makePost.connectTagsAndPost(makePost.getPostIdLatest(), tags);
+        print("creating :"  + " " + Integer.toString(folderid) + " " + title + " " + text);
+
+
+
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, SQLException {
         App app = new App();
         app.run();
     }

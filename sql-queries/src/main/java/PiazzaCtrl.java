@@ -55,8 +55,9 @@ public class PiazzaCtrl extends DBConn{
      * Searches the database for the user and checks that the found user has the same password as the one given in.
      * @param email String email of the user that wants to log in
      * @param password String used to authenticate the user
+     * @return user User that is logged in, if unable to log in returns null.
      */
-    public void login (String email, String password) {
+    public User login (String email, String password) {
         try {
             //Finds user with matching email
             PreparedStatement newregStatement = conn.prepareStatement("SELECT * from piazza.users where users.Email = (?)");
@@ -93,6 +94,7 @@ public class PiazzaCtrl extends DBConn{
             e.printStackTrace();
             System.out.println("db error during insert of Like user= "+email+" postNr="+postId);
         }
+        return this.user;
     }
 
     /**

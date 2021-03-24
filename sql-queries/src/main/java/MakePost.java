@@ -5,8 +5,8 @@ import java.sql.SQLException;
 public class MakePost extends DBConn {
 
     /**
-     * 2. A student makes a post belonging to the folder “Exam” and tagged with “Question”. Input to
-     * the use case should be a post and the texts “Exam” and “Question”.
+     * 2. A student makes a post belonging to the folder "Exam" and tagged with "Question". Input to
+     * the use case should be a post and the texts "Exam" and "Question".
      */
 
     private String folder;
@@ -22,6 +22,11 @@ public class MakePost extends DBConn {
         this.tag = tag.toLowerCase();
         this.text = text;
         this.tag = title;
+        this.connect();
+    }
+
+    public MakePost() {
+        this.connect();
     }
 
     /**
@@ -114,6 +119,14 @@ public class MakePost extends DBConn {
             System.out.println("Could not connect tags and posts.");
             return false;
         }
+    }
+
+    public int getThreadIdLatest() {
+        return threadIdLatest;
+    }
+
+    public int getPostIdLatest() {
+        return postIdLatest;
     }
 
     public static void main(String[] args) throws SQLException {
