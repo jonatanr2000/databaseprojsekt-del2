@@ -22,6 +22,11 @@ public class MakePost extends DBConn {
         this.tag = tag.toLowerCase();
         this.text = text;
         this.tag = title;
+        this.connect();
+    }
+
+    public MakePost() {
+        this.connect();
     }
 
     /**
@@ -114,6 +119,14 @@ public class MakePost extends DBConn {
             System.out.println("Could not connect tags and posts.");
             return false;
         }
+    }
+
+    public int getThreadIdLatest() {
+        return threadIdLatest;
+    }
+
+    public int getPostIdLatest() {
+        return postIdLatest;
     }
 
     public static void main(String[] args) throws SQLException {
