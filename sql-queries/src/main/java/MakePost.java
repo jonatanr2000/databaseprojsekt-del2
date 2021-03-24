@@ -5,8 +5,8 @@ import java.sql.SQLException;
 public class MakePost extends DBConn {
 
     /**
-     * 2. A student makes a post belonging to the folder "Exam" and tagged with "Question". Input to
-     * the use case should be a post and the texts "Exam" and "Question".
+     * 2. A student makes a post belonging to the folder Exam and tagged with Question. Input to
+     * the use case should be a post and the texts Exam and Question.
      */
 
     private String folder;
@@ -47,15 +47,53 @@ public class MakePost extends DBConn {
         }
     }
 
-    public void showFolders() throws SQLException {
+    public void showFolders() {
         try {
             PreparedStatement newregStatement = conn.prepareStatement("select * from piazza.folder");
             ResultSet rs = newregStatement.executeQuery();
             while(rs.next()) {
-                System.out.println("id: " + rs.getRow() + " " + rs.getString(2));
+                System.out.println("id: " + rs.getInt(1) + " " + rs.getString(2));
             }
         } catch (SQLException e) {
             System.out.println("Failed to find folders.");
+        }
+    }
+
+    public void showThreads() {
+        try {
+            PreparedStatement newregStatement = conn.prepareStatement
+                    ("select post.Thread_Id, thread.Title, post.PostText \n" +
+                            "from post inner join thread on post.Thread_Id = thread.Thread_Id \n" +
+                            "where post.PostType = 'post' \n" +
+                            "order by post.Thread_Id; ");
+            ResultSet rs = newregStatement.executeQuery();
+            while(rs.next()) {
+                System.out.println("thread id: " + rs.getInt(1) +
+                        " title: " + rs.getString(2) +
+                        " text: " + rs.getString(3) + "\n");
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to find threads.");
+        }
+    }
+
+    public void showPostsInThread(int threadId) {
+        try {
+            PreparedStatement newregStatement = conn.prepareStatement
+                    ("select post.Post_Id, post.PostText, post.PostType, post.Creator \n" +
+                            "from post inner join thread on post.Thread_Id = thread.Thread_Id\n" +
+                            "where post.Thread_Id = ( ? ) \n" +
+                            "order by post.Thread_Id;");
+            newregStatement.setInt(1, threadId);
+            ResultSet rs = newregStatement.executeQuery();
+            while(rs.next()) {
+                System.out.println("post id: " + rs.getInt(1) +
+                        " text: " + rs.getString(2) +
+                        " post type: " + rs.getString(3) +
+                        " creator: " + rs.getString(4) + "\n");
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to find threads.");
         }
     }
 
@@ -134,10 +172,11 @@ public class MakePost extends DBConn {
         mp.connect();
         //mp.showFolders();
         //mp.makeTag("vanskelig");
-        mp.makeThread("Difficult question 3", 2);
-        System.out.println(mp.threadIdLatest);
-        mp.makePost("Really hard task.", "rod", "post", mp.threadIdLatest, "ha@gmail.com");
-        mp.connectTagsAndPost(mp.postIdLatest, "exam", "TDT4109", "hellothere");
+        //mp.makeThread("Difficult question 3", 2);
+        //mp.makePost("Really hard task.", "red", "post", mp.threadIdLatest, "ha@gmail.com");
+        //mp.connectTagsAndPost(mp.postIdLatest, "exam", "whatup", "hellothere");
+        //mp.showThreads();
+        mp.showPostsInThread(1);
     }
 
 }

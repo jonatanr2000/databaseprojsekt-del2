@@ -52,7 +52,7 @@ public class App {
             action = scanner.nextLine();
             switch(action) {
                 case "create post": {
-                    this.create_post();
+                    //this.create_post();
                 }
                 break;
                 case "view posts": {
@@ -120,9 +120,6 @@ public class App {
         String[] tags = scanner.nextLine().toLowerCase(Locale.ROOT).split(" ");
         makePost.connectTagsAndPost(makePost.getPostIdLatest(), tags);
         print("creating :"  + " " + Integer.toString(folderid) + " " + title + " " + text);
-
-
-
     }
 
     public static void main(String[] args) throws InterruptedException, SQLException {
