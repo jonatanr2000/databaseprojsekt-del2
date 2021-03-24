@@ -1,7 +1,9 @@
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MakePost extends DBConn {
@@ -81,6 +83,29 @@ public class MakePost extends DBConn {
                         " text: " + rs.getString(3) + "\n");
             }
             return threadIds;
+        } catch (SQLException e) {
+            System.out.println("Failed to find threads.");
+            return null;
+        }
+    }
+
+    public List<Integer> showThreads(List<Integer> indexes) {
+        try {
+            PreparedStatement newregStatement = conn.prepareStatement
+                    ("select post.Thread_Id, thread.Title, post.PostText \n" +
+                            "from post inner join thread on post.Thread_Id = thread.Thread_Id \n" +
+                            "where post.Post_Id in ( ? ) \n" +
+                            "order by post.Thread_Id; ");
+            String listString = indexes.toString();
+            listString = "("+listString.substring(1, indexes.size()-1) +")";
+            newregStatement.setString(1, listString);
+            ResultSet rs = newregStatement.executeQuery();
+            while(rs.next()) {
+                System.out.println("thread id: " + rs.getInt(1) +
+                        " title: " + rs.getString(2) +
+                        " text: " + rs.getString(3) + "\n");
+            }
+            return indexes;
         } catch (SQLException e) {
             System.out.println("Failed to find threads.");
             return null;

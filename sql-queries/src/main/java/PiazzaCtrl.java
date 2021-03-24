@@ -151,8 +151,8 @@ public class PiazzaCtrl extends DBConn{
     public void checkReply(int inputPostID) {
         try {
             PreparedStatement newregStatement = conn.
-                prepareStatement("SELECT *, FROM piazza.post WHERE Post_Id = (?)");
-            newregStatement.setInt(inputPostID, 1);
+                prepareStatement("SELECT * FROM piazza.post WHERE Post_Id = (?)");
+            newregStatement.setInt(1, inputPostID);
 
             ResultSet rs = newregStatement.executeQuery();
 
@@ -161,7 +161,8 @@ public class PiazzaCtrl extends DBConn{
                     newregStatement = conn.
                         prepareStatement("UPDATE piazza.post SET ColourCode = 'blue' WHERE " +
                                              "Post_Id = (?) ");
-                    newregStatement.setInt(inputPostID, 1);
+                    newregStatement.setInt(1, inputPostID);
+                    newregStatement.execute();
                 }
             }
 

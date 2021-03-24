@@ -77,23 +77,31 @@ public class App {
     }
 
     private void view_threads() throws InterruptedException {
-        //List<Integer> threadIds = makePost.showThreads();
+        List<Integer> threadIds = makePost.showThreads();
         String action = null;
-        print("go_back \t view_post<id>");
-        action = scanner.nextLine();
-        if (action.contains("view_post")) {
-            print(action.substring(9));
-            int id = Integer.parseInt(action.substring(9));
-            view_thread(id);
+        print("go_back \t view_post<id> \t search:<search text>");
+        while (!action.matches("go_back")) {
+            action = scanner.nextLine();
+            if (action.contains("view_post")) {
+                print(action.substring(9));
+                int id = Integer.parseInt(action.substring(9));
+                view_thread(id);
+            }
+            if (action.contains("search:")) {
+                String searchText = action.substring(7);
+                List<Integer> indexes = piazzaCtrl.search(searchText);
+
+                makePost.showThreads(indexes);
+            }
         }
     }
 
     private void view_thread(int id) throws InterruptedException {
-        //int postID = makePost.showPostsInThread(id);
-        print("go_back \t make_reply<id>");
+        int postID = makePost.showPostsInThread(id);
+        print("go_back \t make_reply");
         String action = scanner.nextLine();
         if(action.contains("make_reply")) {
-            make_reply(id);
+            make_reply(postID);
         }
     }
 
@@ -109,7 +117,7 @@ public class App {
         makePost.makePost(text, colour, "reply", id, user.email);
 
         print("creating reply:"  + " " + Integer.toString(id) + " " + " " + text);
-        //piazzaCtrl.checkReply(id);
+        piazzaCtrl.checkReply(id);
     }
 
     /**
