@@ -1,6 +1,8 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MakePost extends DBConn {
 
@@ -59,8 +61,13 @@ public class MakePost extends DBConn {
         }
     }
 
-    public void showThreads() {
+    /**
+     * Shows the threads in the database.
+     * @return a with the Thread_Ids in the database. Null otherwise.
+     */
+    public List<Integer> showThreads() {
         try {
+            List<Integer> threadIds = new ArrayList<>();
             PreparedStatement newregStatement = conn.prepareStatement
                     ("select post.Thread_Id, thread.Title, post.PostText \n" +
                             "from post inner join thread on post.Thread_Id = thread.Thread_Id \n" +
@@ -68,20 +75,28 @@ public class MakePost extends DBConn {
                             "order by post.Thread_Id; ");
             ResultSet rs = newregStatement.executeQuery();
             while(rs.next()) {
+                threadIds.add(rs.getInt(1));
                 System.out.println("thread id: " + rs.getInt(1) +
                         " title: " + rs.getString(2) +
                         " text: " + rs.getString(3) + "\n");
             }
+            return threadIds;
         } catch (SQLException e) {
             System.out.println("Failed to find threads.");
+            return null;
         }
     }
 
-    public void showPostsInThread(int threadId) {
+    /**
+     * Displays all the posts in a given thread
+     * @param threadId the id of the thread
+     * @return the postId of the post with post type = 'post' in the thread. Null elsewise
+     */
+    public Integer showPostsInThread(int threadId) {
         try {
             PreparedStatement newregStatement = conn.prepareStatement
                     ("select post.Post_Id, post.PostText, post.PostType, post.Creator \n" +
-                            "from post inner join thread on post.Thread_Id = thread.Thread_Id\n" +
+                            "from post inner join thread on post.Thread_Id = thread.Thread_Id \n" +
                             "where post.Thread_Id = ( ? ) \n" +
                             "order by post.Thread_Id;");
             newregStatement.setInt(1, threadId);
@@ -92,8 +107,21 @@ public class MakePost extends DBConn {
                         " post type: " + rs.getString(3) +
                         " creator: " + rs.getString(4) + "\n");
             }
+
+            // Finds the post with post type = 'post' in the thread
+            PreparedStatement postInThread = conn.prepareStatement(
+                    "select post.Post_Id, post.PostText, post.PostType, post.Creator \n" +
+                            "from post inner join thread on post.Thread_Id = thread.Thread_Id\n" +
+                            "where post.Thread_Id = ( ? ) and post.PostType = 'post'\n" +
+                            "order by post.Thread_Id;");
+            postInThread.setInt(1, threadId);
+            ResultSet postId = postInThread.executeQuery();
+            postId.next();
+
+            return postId.getInt(1);
         } catch (SQLException e) {
-            System.out.println("Failed to find threads.");
+            System.out.println("Failed to find posts.");
+            return null;
         }
     }
 
