@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +56,7 @@ public class App {
                 }
                 break;
                 case "view posts": {
-                    //Do nothing
+                    this.view_threads();
                 }
                 break;
                 case"statistics": {
@@ -73,6 +74,32 @@ public class App {
         }
         print("Logging out, good bye world");
 
+    }
+
+    private void view_threads() throws InterruptedException {
+        List<Integer> threadIds = makePost.viewPost();
+        String action = null;
+        print("go_back \t view_post<id>");
+        action = scanner.nextLine();
+        if (action.contains("view_post")) {
+            print(action.substring(9));
+            int id = Integer.parseInt(action.substring(9));
+            view_thread(id);
+        }
+    }
+
+    private void view_thread(int id) throws InterruptedException {
+        makePost.viewThread(id);
+        print("go_back \t make_reply<id>");
+        String action = scanner.nextLine();
+        if(action.contains("make_reply")) {
+            int post_id = 
+            make_reply(id);
+        }
+    }
+
+    private void make_reply(int id) {
+        piazzaCtrl.checkReply(id);
     }
 
     /**
