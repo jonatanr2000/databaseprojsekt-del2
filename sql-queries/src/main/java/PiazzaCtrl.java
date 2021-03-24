@@ -148,12 +148,36 @@ public class PiazzaCtrl extends DBConn{
         }
     }
 
+    public void checkReply(int inputPostID) {
+        try {
+            PreparedStatement newregStatement = conn.
+                prepareStatement("SELECT *, FROM piazza.post WHERE Post_Id = (?)");
+            newregStatement.setInt(inputPostID, 1);
+
+            ResultSet rs = newregStatement.executeQuery();
+
+            if (rs.next()) {
+                if (rs.getString("colourCode").matches("red")) {
+                    newregStatement = conn.
+                        prepareStatement("UPDATE piazza.post SET ColourCode = 'blue' WHERE " +
+                                             "Post_Id = (?) ");
+                    newregStatement.setInt(inputPostID, 1);
+                }
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
 
         PiazzaCtrl viewCtrl = new PiazzaCtrl();
         viewCtrl.connect();
         viewCtrl.login("ha@gmail.com", "ok");
         viewCtrl.getPosts();
+
+        viewCtrl.checkReply(1);
     }
 }
 

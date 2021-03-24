@@ -77,7 +77,7 @@ public class App {
     }
 
     private void view_threads() throws InterruptedException {
-        List<Integer> threadIds = makePost.showThreads();
+        //List<Integer> threadIds = makePost.showThreads();
         String action = null;
         print("go_back \t view_post<id>");
         action = scanner.nextLine();
@@ -89,7 +89,7 @@ public class App {
     }
 
     private void view_thread(int id) throws InterruptedException {
-        int postID = makePost.showPostsInThread(id);
+        //int postID = makePost.showPostsInThread(id);
         print("go_back \t make_reply<id>");
         String action = scanner.nextLine();
         if(action.contains("make_reply")) {

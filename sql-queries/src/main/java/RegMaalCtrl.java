@@ -1,13 +1,14 @@
-import java.sql.*;
-import java.util.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 
-public class RegMaalCtrl extends DBConn{
+public class RegMaalCtrl extends DBConn {
 
-    private int brikkeNr;
     private static final int INGEN_BRIKKE = -1;
+    private int brikkeNr;
     private PreparedStatement regStatement;
 
-    public RegMaalCtrl () {
+    public RegMaalCtrl() {
         brikkeNr = INGEN_BRIKKE;
     }
 
@@ -19,7 +20,8 @@ public class RegMaalCtrl extends DBConn{
             System.out.println("db error during prepare of insert into Reg");
         }
     }
-    public void regPost (int sekvNr, int postNr, int tid) {
+
+    public void regPost(int sekvNr, int postNr, int tid) {
         if (brikkeNr != INGEN_BRIKKE) {
             try {
                 regStatement.setInt(1, sekvNr);
@@ -28,12 +30,13 @@ public class RegMaalCtrl extends DBConn{
                 regStatement.setInt(4, tid);
                 regStatement.execute();
             } catch (Exception e) {
-                System.out.println("db error during insert of Reg sekvnr= "+sekvNr+" postNr="+postNr);
+                System.out.println(
+                    "db error during insert of Reg sekvnr= " + sekvNr + " postNr=" + postNr);
             }
         }
     }
 
-    public boolean sluttReg () {
+    public boolean sluttReg() {
         ArrayList<Reg> loperPoster = new ArrayList<Reg>();
         int startTid = -1;
         int sluttTid = -1;
@@ -41,8 +44,9 @@ public class RegMaalCtrl extends DBConn{
 
         // read from runner's Reg into a local copy of loperPoster
         try {
-            PreparedStatement loypeStmt = conn.prepareStatement("select sekvnr, postnr, tid from Reg where brikkenr=(?) order by sekvnr");
-            loypeStmt.setInt(1,brikkeNr);
+            PreparedStatement loypeStmt = conn.prepareStatement(
+                "select sekvnr, postnr, tid from Reg where brikkenr=(?) order by sekvnr");
+            loypeStmt.setInt(1, brikkeNr);
             ResultSet rs = loypeStmt.executeQuery();
             while (rs.next()) {
                 if (startTid == -1) {
@@ -53,7 +57,7 @@ public class RegMaalCtrl extends DBConn{
             }
 
         } catch (Exception e) {
-            System.out.println("db error during select of loperposter = "+e);
+            System.out.println("db error during select of loperposter = " + e);
             return false;
         }
 
@@ -61,31 +65,32 @@ public class RegMaalCtrl extends DBConn{
         lopsTid = sluttTid - startTid;
 
         // read the correct Loype from the database
-        int[] loype = new int [100];
+        int[] loype = new int[100];
         int nPoster = 0;
         try {
-            PreparedStatement chkStmt = conn.prepareStatement("select postnr from Loype, Klasse, Loper where Loper.brikkenr= (?) and Loper.klasse=Klasse.klassenavn and Klasse.lnr=Loype.lnr order by Loype.sekvnr");
+            PreparedStatement chkStmt = conn.prepareStatement(
+                "select postnr from Loype, Klasse, Loper where Loper.brikkenr= (?) and Loper.klasse=Klasse.klassenavn and Klasse.lnr=Loype.lnr order by Loype.sekvnr");
             chkStmt.setInt(1, brikkeNr);
             ResultSet rs = chkStmt.executeQuery();
 
-            while (rs.next())
-            {
-                loype[nPoster++]=rs.getInt("postnr");
+            while (rs.next()) {
+                loype[nPoster++] = rs.getInt("postnr");
             }
         } catch (Exception e) {
-            System.out.println("db error during select of postnr = "+e);
+            System.out.println("db error during select of postnr = " + e);
             return false;
         }
 
         // check that the runner has done the correct Posts (controls). Set status=dsq in case of wrong controls
-        for (int i=0; i<nPoster; i++) {
+        for (int i = 0; i < nPoster; i++) {
             if (loype[i] != loperPoster.get(i).reg) {
                 try {
-                    PreparedStatement updStmt = conn.prepareStatement("update Loper set status='dsq' where brikkenr= (?)");
-                    updStmt.setInt(1,brikkeNr);
+                    PreparedStatement updStmt = conn.prepareStatement(
+                        "update Loper set status='dsq' where brikkenr= (?)");
+                    updStmt.setInt(1, brikkeNr);
                     updStmt.execute();
                 } catch (Exception e) {
-                    System.out.println("db error during update of loper ="+e);
+                    System.out.println("db error during update of loper =" + e);
                 }
                 brikkeNr = INGEN_BRIKKE;
                 return false;
@@ -93,12 +98,13 @@ public class RegMaalCtrl extends DBConn{
         }
         // alt ok
         try {
-            PreparedStatement updStmt = conn.prepareStatement("update Loper set status='ok', lopstid=(?) where brikkenr= (?)");
+            PreparedStatement updStmt = conn.prepareStatement(
+                "update Loper set status='ok', lopstid=(?) where brikkenr= (?)");
             updStmt.setInt(1, lopsTid);
             updStmt.setInt(2, brikkeNr);
             updStmt.execute();
         } catch (Exception e) {
-            System.out.println("db error during update of loper ="+e);
+            System.out.println("db error during update of loper =" + e);
         }
         brikkeNr = INGEN_BRIKKE;
         return true;
