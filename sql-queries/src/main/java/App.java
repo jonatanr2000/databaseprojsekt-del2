@@ -93,9 +93,6 @@ public class App {
         String[] tags = scanner.nextLine().toLowerCase(Locale.ROOT).split(" ");
         makePost.connectTagsAndPost(makePost.getPostIdLatest(), tags);
         print("creating :"  + " " + Integer.toString(folderid) + " " + title + " " + text);
-
-
-
     }
 
     public static void main(String[] args) throws InterruptedException, SQLException {
