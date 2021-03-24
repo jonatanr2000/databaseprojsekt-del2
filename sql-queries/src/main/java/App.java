@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
@@ -41,6 +42,7 @@ public class App {
             String password = scanner.nextLine().trim();
             print("logging on with, email: " + email + " and password " + password);
             user = piazzaCtrl.login(email, password);
+            makePost.setUser(user);
         }
 
         print("Welcome to the main hub.");
@@ -52,7 +54,7 @@ public class App {
             action = scanner.nextLine();
             switch(action) {
                 case "create post": {
-                    //this.create_post();
+                    this.create_post();
                 }
                 break;
                 case "view posts": {
@@ -68,7 +70,7 @@ public class App {
                 }
                 break;
                 default:
-                    throw new IllegalStateException("Unexpected value: " + action);
+                    print("Sorry I did not understand that");
             }
 
         }
@@ -78,30 +80,41 @@ public class App {
 
     private void view_threads() throws InterruptedException {
         List<Integer> threadIds = makePost.showThreads();
-        String action = null;
-        print("go_back \t view_post<id> \t search:<search text>");
+        String action = "";
         while (!action.matches("go_back")) {
+            print("go_back \t view_post<id> \t search:<search text>");
             action = scanner.nextLine();
             if (action.contains("view_post")) {
                 print(action.substring(9));
                 int id = Integer.parseInt(action.substring(9));
                 view_thread(id);
-            }
-            if (action.contains("search:")) {
+            } else if (action.contains("search:")) {
                 String searchText = action.substring(7);
-                List<Integer> indexes = piazzaCtrl.search(searchText);
+               // List<Integer> indexes = piazzaCtrl.search(searchText);
+                List<Integer> indexes = Arrays.asList(1,4, 5, 10);
 
                 makePost.showThreads(indexes);
+            } else if (action.matches("go_back")){
+                //pass
+            } else {
+                print("Sorry I did not understand that.");
             }
         }
     }
 
     private void view_thread(int id) throws InterruptedException {
         int postID = makePost.showPostsInThread(id);
-        print("go_back \t make_reply");
-        String action = scanner.nextLine();
-        if(action.contains("make_reply")) {
-            make_reply(postID);
+        String action = "";
+        while (!action.matches("go_back")) {
+            print("go_back \t make_reply");
+            action = scanner.nextLine();
+            if (action.contains("make_reply")) {
+                make_reply(postID);
+            }else if (action.matches("go_back")) {
+                //pass
+            } else {
+                print("Sorry I did not understand that");
+            }
         }
     }
 
