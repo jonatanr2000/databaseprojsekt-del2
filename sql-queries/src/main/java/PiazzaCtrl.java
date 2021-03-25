@@ -172,8 +172,8 @@ public class PiazzaCtrl extends DBConn{
         }
     }
 
-    public void search(String word) {
-        ArrayList<String> keyWords = new ArrayList<>();
+    public ArrayList<Integer> search(String word) {
+        ArrayList<Integer> keyWords = new ArrayList<>();
         try {
             PreparedStatement newRegStatement = conn
                 .prepareStatement("SELECT * FROM piazza.post NATURAL JOIN piazza.thread " +
@@ -181,8 +181,9 @@ public class PiazzaCtrl extends DBConn{
             ResultSet rs = newRegStatement.executeQuery();
 
             while (rs.next()) {
-                keyWords.add(rs.getString());
+                keyWords.add(rs.getInt("Post_Id"));
             }
+            return keyWords;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
