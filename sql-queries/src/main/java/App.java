@@ -1,13 +1,11 @@
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 
 public class App {
 
     PiazzaCtrl piazzaCtrl = new PiazzaCtrl();
-    MakePost makePost = new MakePost();
     Scanner scanner = new Scanner(System.in);
     User user;
 
@@ -70,7 +68,7 @@ public class App {
                         case "log out":
                         case "exit": {
                             piazzaCtrl.user = null;
-                            makePost.setUser(null);
+                            piazzaCtrl.setUser(null);
                             this.user = null;
                         }
                         break;
@@ -113,7 +111,7 @@ public class App {
         String password = scanner.nextLine().trim();
         print("logging on with, email: " + email + " and password " + password);
         user = piazzaCtrl.login(email, password);
-        makePost.setUser(user);
+        piazzaCtrl.setUser(user);
         if (user == null) {
             print("username or password is wrong.");
         }
@@ -126,24 +124,24 @@ public class App {
      * @throws InterruptedException if print function is interrupted.
      */
     private void view_threads() throws InterruptedException {
-        List<String> threads = makePost.getThreads();
+        List<String> threads = piazzaCtrl.getThreads();
         print(threads);
         String action = "";
         while (!action.matches("go_back")) {
-            print("go_back \t view_post<id> \t search:<search text>");
+            print("go_back \t view thread<id> \t search:<search text>");
             action = scanner.nextLine();
-            if (action.contains("view_post")) {
-                print(action.substring(9));
-                int id = Integer.parseInt(action.substring(9));
+            if (action.contains("view thread")) {
+                print(action.substring(11));
+                int id = Integer.parseInt(action.substring(11));
                 view_thread(id);
-                threads = makePost.getThreads();
+                threads = piazzaCtrl.getThreads();
                 print(threads);
             } else if (action.contains("search:")) {
                 String searchText = action.substring(7);
                 print("searches for: " + searchText);
                 List<Integer> ids = piazzaCtrl.search(searchText.trim());
                 if (ids.size() > 0) {
-                    List<String> posts = makePost.getPosts(ids);
+                    List<String> posts = piazzaCtrl.getPosts(ids);
                     print(posts);
                 }else {
                     print("Found no posts matching the search criteria.");
@@ -166,8 +164,8 @@ public class App {
      */
     private void view_thread(int threadID) throws InterruptedException {
         piazzaCtrl.view(user.email, threadID);
-        int postID = makePost.getPostInThread(threadID);
-        List<String> posts = makePost.getPostsInThread(threadID);
+        int postID = piazzaCtrl.getPostInThread(threadID);
+        List<String> posts = piazzaCtrl.getPostsInThread(threadID);
         print(posts);
         String action = "";
         while (!action.matches("go_back")) {
@@ -176,7 +174,7 @@ public class App {
             action = scanner.nextLine();
             if (action.contains("make_reply")) {
                 make_reply(postID);
-                posts = makePost.getPostsInThread(threadID);
+                posts = piazzaCtrl.getPostsInThread(threadID);
                 print(posts);
             } else if (action.contains("like")) {
                 Integer likeID = Integer.parseInt(action.substring(4));
@@ -203,8 +201,8 @@ public class App {
         } else {
             colour = "green";
         }
-        int threadId = makePost.findThreadIdFromPostId(postId);
-        int postID = makePost.makePost(text, colour, "reply", threadId, user.email);
+        int threadId = piazzaCtrl.findThreadIdFromPostId(postId);
+        int postID = piazzaCtrl.makePost(text, colour, "reply", threadId, user.email);
 
         print("creating reply:" + " " + postID + " " + " " + text);
         piazzaCtrl.checkReply(postID, user);
@@ -220,7 +218,7 @@ public class App {
      * (Here we think it is better to let the post exist without tags rather than deleting the post if the tags are not connected.)
      */
     private void create_post() throws InterruptedException {
-        List<String> folders = makePost.showFolders();
+        List<String> folders = piazzaCtrl.showFolders();
         print(folders);
         print("Please choose folder by id");
         int folderId = Integer.parseInt(scanner.nextLine());
@@ -229,11 +227,11 @@ public class App {
         print("text: ");
         String text = scanner.nextLine();
 
-        makePost.makeThread(title, folderId);
-        makePost.makePost(text, "red", "post", makePost.getThreadIdLatest(), user.email);
+        piazzaCtrl.makeThread(title, folderId);
+        piazzaCtrl.makePost(text, "red", "post", piazzaCtrl.getThreadIdLatest(), user.email);
         print("Please enter the tags separated by 'space'.");
         String[] tags = scanner.nextLine().toLowerCase(Locale.ROOT).split(" ");
-        boolean madeTags = makePost.connectTagsAndPost(makePost.getPostIdLatest(), tags);
+        boolean madeTags = piazzaCtrl.connectTagsAndPost(piazzaCtrl.getPostIdLatest(), tags);
         if (!madeTags) {
             print("Was unable to connect the tags to the post, please contact support.");
         }
