@@ -71,7 +71,7 @@ public class MakePost extends DBConn {
      * Returns a list of threads as strings with thread id, title and the text of the post.
      * @return the list of threads, an empty string otherwise.
      */
-    public List<String> showThreads() {
+    public List<String> getThreads() {
         List<String> threadList = new ArrayList<>();
         try {
             PreparedStatement newregStatement = conn.prepareStatement
@@ -97,7 +97,7 @@ public class MakePost extends DBConn {
      * @param indexes the ids of the threads that are to be shown.
      * @return list of strings if the method succeeds, an empty list otherwise.
      */
-    public List<String> showThreads(List<Integer> indexes) {
+    public List<String> getThreads(List<Integer> indexes) {
         try {
             if (indexes.size() > 0) {
                 List<String> threadList = new ArrayList<>();
