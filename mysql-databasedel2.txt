@@ -1,0 +1,144 @@
+create table users(
+ Email varchar(60) not null unique,
+ Password varchar(50),
+ Firstname varchar(50),
+ Surname varchar(50),
+ Last_Active datetime,
+ Is_Instructor boolean,
+ primary key(Email)
+);
+create table course(
+ CourseCode varchar(10) not null unique,
+ CourseName varchar(80) not null,
+ Term varchar(16),
+ AllowAnonymous boolean,
+ primary key(CourseCode)
+);
+create table folder(
+ Folder_Id int not null auto_increment,
+ FolderName varchar(30) not null,
+ SubFolderIn int,
+ primary key(Folder_Id),
+ foreign key(SubFolderIn) references folder(Folder_Id)
+ on delete cascade
+ on update cascade
+);
+create table folderInCourse(
+ Folder_Id int not null,
+ CourseCode varchar(10) not null,
+ primary key(Folder_Id, CourseCode),
+ foreign key(Folder_Id) references folder(Folder_Id)
+ on delete cascade
+ on update cascade,
+ foreign key(CourseCode) references course(CourseCode)
+ on delete cascade
+ on update cascade
+);
+create table tag(
+ Description varchar(50),
+ primary key(Description)
+);
+
+create table thread(
+ Thread_Id int not null unique auto_increment,
+ Title varchar(40) not null,
+ Folder_Id int not null,
+ primary key(Thread_Id),
+ foreign key(Folder_Id) references folder(Folder_Id)
+ on delete cascade
+ on update cascade
+);
+create table post(
+ Post_Id int not null unique auto_increment,
+ PostText varchar(500),
+ ColourCode varchar(6),
+ PostType varchar(20),
+ Thread_Id int not null,
+ Creator varchar(60) not null,
+ primary key(Post_Id),
+ foreign key(Creator) references users(Email)
+ on update cascade
+ on delete cascade
+);
+create table tags(
+ Description varchar(50) not null,
+ Post_Id int not null,
+ primary key(Description, Post_Id),
+ foreign key(Post_Id) references post(Post_Id)
+ on delete cascade
+ on update cascade,
+ foreign key(Description) references tag(Description)
+ on delete cascade
+ on update cascade
+);
+create table participatesIn(
+ Email varchar(60) not null,
+ CourseCode varchar(10) not null,
+ primary key(Email, CourseCode),
+ foreign key(Email) references users(Email)
+ on delete cascade
+ on update cascade,
+ foreign key(CourseCode) references course(CourseCode)
+ on update cascade
+ on delete cascade
+);
+create table view (
+ Email varchar(60) not null,
+ Thread_Id int not null,
+ primary key(Email, Thread_Id),
+ Foreign key (Email) references users(Email)
+ on delete cascade
+ on update cascade,
+ Foreign key (Thread_Id) references thread(Thread_Id)
+ on delete cascade
+ on update cascade
+);
+create table likes (
+ Email varchar(60) not null,
+ Post_Id int not null,
+ primary key(Email, Post_Id),
+ foreign key(Email) references users(Email)
+ on delete cascade
+ on update cascade,
+ foreign key(Post_Id) references post(Post_Id)
+ on delete cascade
+ on update cascade
+);
+create table link(
+ PostFrom int not null,
+ PostTo int not null,
+ primary key(PostFrom, PostTo),
+ foreign key(PostFrom) references post(Post_Id)
+ on delete cascade
+ on update cascade,
+ foreign key(PostTo) references post(Post_Id)
+ on delete cascade
+ on update cascade
+);
+
+insert into users values ("ha@gmail.com", "ok", "halvard", "Tretteberg", now(), true);
+insert into users values ("tor@gmail.com", "ok", "Tor", "Strande", now(), false);
+insert into users values ("jonatar@gmail.com", "ok", "Jonatan", "Risaasen", now(), false);
+insert into course values("TTT", "Tor Tilt Tantrum", null, false);
+
+insert into folder (FolderName) values ("eksamen");
+insert into thread (Title, Folder_Id) values ("hei", 1);
+insert into post (PostText, ColourCode, PostType, Thread_Id, Creator) values("hei", "rod", "post", 1, "ha@gmail.com");
+insert into post (PostText, ColourCode, PostType, Thread_Id, Creator) values("Hallo", "gronn", "reply", 1, "ha@gmail.com");
+insert into post (PostText, ColourCode, PostType, Thread_Id, Creator) values("Hallo2", "gronn", "reply", 1, "ha@gmail.com");
+insert into thread (Title, Folder_Id) values ("ny thred", 1);
+insert into post (PostText, ColourCode, PostType, Thread_Id, Creator) values("Tittel", "rod", "post", 2, "tor@gmail.com");
+insert into view values("ha@gmail.com", 1), ("tor@gmail.com", 1);
+insert into view values("tor@gmail.com", 2);
+
+                            
+
+select * from tags;
+select * from post;
+select post.Thread_Id, thread.Title, post.PostText
+from post inner join thread on post.Thread_Id = thread.Thread_Id
+where post.Post_Id in (1, 2, 4, 5)
+order by post.Thread_Id;
+
+select * from post where Thread_Id = 12;
+                            
