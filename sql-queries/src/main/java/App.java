@@ -123,7 +123,7 @@ public class App {
      * If a user wants to see a thread or search for a post, they will be shown that.
      * @throws InterruptedException if print function is interrupted.
      */
-    private void view_threads() throws InterruptedException {
+    private void view_theads() throws InterruptedException {
         List<String> threads = piazzaCtrl.getThreads();
         print(threads);
         String action = "";
