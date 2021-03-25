@@ -275,28 +275,6 @@ public class PiazzaCtrl extends DBConn {
     }
 
     /**
-     * Returns a list of the thread ids that exist in the database.
-     * @return a list of integers if the method succeeds, an empty list otherwise.
-     */
-    public List<Integer> getThreadId() {
-        List<Integer> threadList = new ArrayList<>();
-        try {
-            PreparedStatement getThreadIdsQuery = conn.prepareStatement
-                    ("select piazza.post.Thread_Id, piazza.thread.Title, piazza.post.PostText \n" +
-                            "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
-                            "where post.PostType = 'post' \n" +
-                            "order by post.Thread_Id; ");
-            ResultSet rs = getThreadIdsQuery.executeQuery();
-            while(rs.next()) {
-                threadList.add(rs.getInt(1));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return threadList;
-    }
-
-    /**
      * Returns a list of posts as strings with thread id, title and the text of the post. The
      * posts that will be returned are the one with an id specified in the parameters.
      * @param indexes the ids of the posts that are to be shown.
