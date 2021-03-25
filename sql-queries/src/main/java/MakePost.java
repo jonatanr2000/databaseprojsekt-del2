@@ -1,7 +1,6 @@
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MakePost extends DBConn {
@@ -18,6 +17,7 @@ public class MakePost extends DBConn {
     private PreparedStatement regStatement;
     private int threadIdLatest;
     private int postIdLatest;
+    private User user;
 
     public MakePost(String title, String text, String folder, String tag) {
         this.folder = folder;
@@ -29,6 +29,10 @@ public class MakePost extends DBConn {
 
     public MakePost() {
         this.connect();
+    }
+
+    public void setUser (User user) {
+        this.user = user;
     }
 
     /**
@@ -87,6 +91,30 @@ public class MakePost extends DBConn {
         }
     }
 
+    public List<Integer> showThreads(List<Integer> indexes) {
+        try {
+            String listString = indexes.toString();
+            listString = "(" + listString.substring(1, listString.length()-1) + ")";
+            //Since the input is a list of integers we don't think it's likely that this can be used to sql-injects.
+            PreparedStatement newregStatement = conn.prepareStatement
+                    ("select post.Thread_Id, thread.Title, post.PostText \n" +
+                            "from post inner join thread on post.Thread_Id = thread.Thread_Id \n" +
+                            "where post.Post_Id in "+listString+"  \n " +
+                            "order by post.Thread_Id; ");
+            ResultSet rs = newregStatement.executeQuery();
+            while(rs.next()) {
+                System.out.println("thread id: " + rs.getInt(1) +
+                        " title: " + rs.getString(2) +
+                        " text: " + rs.getString(3) + "\n");
+            }
+            return indexes;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Failed to find threads.");
+            return null;
+        }
+    }
+
     /**
      * Displays all the posts in a given thread
      * @param threadId the id of the thread
@@ -107,6 +135,11 @@ public class MakePost extends DBConn {
                         " post type: " + rs.getString(3) +
                         " creator: " + rs.getString(4) + "\n");
             }
+
+            PreparedStatement viewed_post = conn.prepareStatement("INSERT INTO piazza.view VALUES ((?), (?))");
+            viewed_post.setString(1, user.email);
+            viewed_post.setInt(2, threadId);
+            viewed_post.execute();
 
             // Finds the post with post type = 'post' in the thread
             PreparedStatement postInThread = conn.prepareStatement(
@@ -204,7 +237,8 @@ public class MakePost extends DBConn {
         //mp.makePost("Really hard task.", "red", "post", mp.threadIdLatest, "ha@gmail.com");
         //mp.connectTagsAndPost(mp.postIdLatest, "exam", "whatup", "hellothere");
         //mp.showThreads();
-        mp.showPostsInThread(1);
+        //mp.showPostsInThread(1);
+        System.out.println(mp.showThreads(Arrays.asList(1, 2, 4, 5)));
     }
 
 }
