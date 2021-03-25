@@ -97,7 +97,7 @@ public class App {
     private void view_threads() throws InterruptedException {
         String action = "";
         while (!action.matches("go_back")) {
-            List<Integer> threadIds = makePost.showThreads();
+            //List<Integer> threadIds = makePost.showThreads();
             print("go_back \t view_post<id> \t search:<search text>");
             action = scanner.nextLine();
             if (action.contains("view_post")) {
@@ -109,7 +109,7 @@ public class App {
                 print("searches for: " + searchText);
                 List<Integer> ids = piazzaCtrl.search(searchText.trim());
                 if (ids.size() > 0) {
-                    makePost.showThreads(ids);
+                    //makePost.showThreads(ids);
                 }else {
                     print("Found no posts matching the search criteria.");
                 }
@@ -123,15 +123,15 @@ public class App {
 
     private void view_thread(int id) throws InterruptedException {
         piazzaCtrl.view(user.email, id);
-        int postID = makePost.showPostsInThread(id);
+        //int postID = makePost.showPostsInThread(id);
         String action = "";
         while (!action.matches("go_back")) {
 
             print("go_back \t make_reply \t like<id>");
             action = scanner.nextLine();
             if (action.contains("make_reply")) {
-                make_reply(postID);
-                makePost.showPostsInThread(id);
+                //make_reply(postID);
+                //makePost.showPostsInThread(id);
             } else if (action.contains("like")) {
                 Integer likeID = Integer.parseInt(action.substring(4));
                 piazzaCtrl.regLike(user.email, likeID);
