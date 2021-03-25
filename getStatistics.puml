@@ -5,5 +5,8 @@ Actor -> App : getStatistics
 activate App #gold
 App -> PiazzaCtrl :getStatistics
 activate PiazzaCtrl #silver
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+
 return
 @enduml
