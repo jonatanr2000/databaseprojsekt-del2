@@ -1,0 +1,55 @@
+@startuml
+box #lightgreen
+participant Actor
+Actor -> App : view_theads
+activate App #gold
+App -> App : view_thread
+activate App #silver
+App -> PiazzaCtrl : view
+activate PiazzaCtrl #silver
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : getPostInThread
+activate PiazzaCtrl #silver
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : getPostsInThread
+activate PiazzaCtrl #silver
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> App : make_reply
+activate App #blue
+App -> PiazzaCtrl : findThreadIdFromPostId
+activate PiazzaCtrl #blue
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : makePost
+activate PiazzaCtrl #blue
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : checkReply
+activate PiazzaCtrl #blue
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App --> App
+deactivate App
+App -> PiazzaCtrl : getPostsInThread
+activate PiazzaCtrl #silver
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : regLike
+activate PiazzaCtrl #silver
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App --> App
+deactivate App
+App -> PiazzaCtrl : search
+activate PiazzaCtrl #gold
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : getPosts
+activate PiazzaCtrl #gold
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+return
+@enduml
