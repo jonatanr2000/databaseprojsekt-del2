@@ -9,8 +9,6 @@ public class User {
     protected String firstname;
     protected String surname;
     protected LocalDateTime lastActive;
-    protected ArrayList<Post> views = new ArrayList<>();
-    protected ArrayList<Post> likes = new ArrayList<>();
     protected Boolean isInstrucor;
 
 
@@ -22,19 +20,5 @@ public class User {
         this.lastActive = lastActive;
         this.isInstrucor = isInstructor;
     }
-
-
-    public void view(Post viewedPost) {
-        if (!views.contains(viewedPost)) {
-            views.add(viewedPost);
-        }
-    }
-
-    public void like (Post likedPost) {
-
-    }
-
-
-
 
 }
