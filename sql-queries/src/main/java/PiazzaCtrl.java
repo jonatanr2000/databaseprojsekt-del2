@@ -494,9 +494,7 @@ public class PiazzaCtrl extends DBConn {
         User user = viewCtrl.login("ha@gmail.com", "ok");
         System.out.println(viewCtrl.search("NO"));
         viewCtrl.getStatistics();
-
-
+        
         viewCtrl.checkReply(1, user);
     }
 }
-
