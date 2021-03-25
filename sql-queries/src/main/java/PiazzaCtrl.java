@@ -2,6 +2,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList
 
 public class PiazzaCtrl extends DBConn{
 
@@ -151,8 +152,8 @@ public class PiazzaCtrl extends DBConn{
     public void checkReply(int inputPostID) {
         try {
             PreparedStatement newregStatement = conn.
-                prepareStatement("SELECT *, FROM piazza.post WHERE Post_Id = (?)");
-            newregStatement.setInt(inputPostID, 1);
+                prepareStatement("SELECT * FROM piazza.post WHERE Post_Id = (?)");
+            newregStatement.setInt(1, inputPostID);
 
             ResultSet rs = newregStatement.executeQuery();
 
@@ -161,13 +162,30 @@ public class PiazzaCtrl extends DBConn{
                     newregStatement = conn.
                         prepareStatement("UPDATE piazza.post SET ColourCode = 'blue' WHERE " +
                                              "Post_Id = (?) ");
-                    newregStatement.setInt(inputPostID, 1);
+                    newregStatement.setInt(1, inputPostID);
                 }
             }
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+    }
+
+    public void search(String word) {
+        ArrayList<String> keyWords = new ArrayList<String>();
+        try {
+            PreparedStatement newregStatement = conn
+                .prepareStatement("SELECT * FROM piazza.post NATURAL JOIN piazza.thread " +
+                                      "WHERE Title LIKE %"+word+"% OR PostText LIKE %"+word+"% ");
+            ResultSet rs = newregStatement.executeQuery();
+
+            while (rs.next()) {
+                keyWords.add(rs.getString(1));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
     }
 
     public static void main(String[] args) {
