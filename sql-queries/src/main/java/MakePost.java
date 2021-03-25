@@ -98,26 +98,28 @@ public class MakePost extends DBConn {
      */
     public List<Integer> showThreads(List<Integer> indexes) {
         try {
-            String listString = indexes.toString();
-            listString = "(" + listString.substring(1, listString.length()-1) + ")";
-            //Since the input is a list of integers we don't think it's likely that this can be used to sql-injects.
-            PreparedStatement newregStatement = conn.prepareStatement
-                    ("select piazza.post.Thread_Id, piazza.thread.Title, piazza.post.PostText \n" +
-                            "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
-                            "where post.Post_Id in "+listString+"  \n " +
-                            "order by post.Thread_Id; ");
-            ResultSet rs = newregStatement.executeQuery();
-            while(rs.next()) {
-                System.out.println("thread id: " + rs.getInt(1) +
-                        " title: " + rs.getString(2) +
-                        " text: " + rs.getString(3) + "\n");
+            if (indexes.size() > 0) {
+                String listString = indexes.toString();
+                listString = "(" + listString.substring(1, listString.length() - 1) + ")";
+                //Since the input is a list of integers we don't think it's likely that this can be used to sql-injects.
+                PreparedStatement newregStatement = conn.prepareStatement
+                        ("select piazza.post.Thread_Id, piazza.thread.Title, piazza.post.PostText \n" +
+                                "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
+                                "where post.Post_Id in " + listString + "  \n " +
+                                "order by post.Thread_Id; ");
+                ResultSet rs = newregStatement.executeQuery();
+                while (rs.next()) {
+                    System.out.println("thread id: " + rs.getInt(1) +
+                            " title: " + rs.getString(2) +
+                            " text: " + rs.getString(3) + "\n");
+                }
+                return indexes;
             }
-            return indexes;
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Failed to find threads.");
-            return null;
         }
+        return null;
     }
 
     /**
@@ -132,7 +134,7 @@ public class MakePost extends DBConn {
                     ("select post.Post_Id, post.PostText, post.PostType, post.Creator \n" +
                             "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
                             "where post.Thread_Id = ( ? ) \n" +
-                            "order by post.Thread_Id;");
+                            "order by post.Post_Id;");
             newregStatement.setInt(1, threadId);
             ResultSet rs = newregStatement.executeQuery();
             while (rs.next()) {
