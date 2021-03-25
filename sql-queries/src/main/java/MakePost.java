@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Makes the posts and threads.
+ */
 public class MakePost extends DBConn {
 
     /**
@@ -10,27 +13,21 @@ public class MakePost extends DBConn {
      * the use case should be a post and the texts Exam and Question.
      */
 
-    private String folder;
-    private String tag;
-    private String text;
-    private String title;
-    private PreparedStatement regStatement;
     private int threadIdLatest;
     private int postIdLatest;
     private User user;
 
-    public MakePost(String title, String text, String folder, String tag) {
-        this.folder = folder;
-        this.tag = tag.toLowerCase();
-        this.text = text;
-        this.tag = title;
-        this.connect();
-    }
-
+    /**
+     * Constructor without parameters.
+     */
     public MakePost() {
         this.connect();
     }
 
+    /**
+     * Sets the user.
+     * @param user the user which is to be set.
+     */
     public void setUser (User user) {
         this.user = user;
     }
@@ -53,6 +50,9 @@ public class MakePost extends DBConn {
         }
     }
 
+    /**
+     * Shows all the folders that exist in the database with their associated ids.
+     */
     public void showFolders() {
         try {
             PreparedStatement newregStatement = conn.prepareStatement("select * from piazza.folder");
@@ -67,7 +67,7 @@ public class MakePost extends DBConn {
 
     /**
      * Shows the threads in the database.
-     * @return a with the Thread_Ids in the database. Null otherwise.
+     * @return a list with the thread ids in the database. Null otherwise.
      */
     public List<Integer> showThreads() {
         try {
@@ -91,6 +91,11 @@ public class MakePost extends DBConn {
         }
     }
 
+    /**
+     * Shows the threads with the ids that are given.
+     * @param indexes the ids of the threads that are wanted to be seen.
+     * @return list of thread ids that are shown.
+     */
     public List<Integer> showThreads(List<Integer> indexes) {
         try {
             String listString = indexes.toString();
@@ -116,9 +121,9 @@ public class MakePost extends DBConn {
     }
 
     /**
-     * Displays all the posts in a given thread
-     * @param threadId the id of the thread
-     * @return the postId of the post with post type = 'post' in the thread. Null elsewise
+     * Displays all the posts in a given thread.
+     * @param threadId the id of the thread.
+     * @return the postId of the post with post type = 'post' in the thread. Null elsewise.
      */
     public Integer showPostsInThread(int threadId) {
         Integer postID = null;
@@ -167,6 +172,12 @@ public class MakePost extends DBConn {
         return postID;
     }
 
+    /**
+     * Makes a thread with a title in a given folder.
+     * @param title is the title of the thread.
+     * @param folderId is the id of the folder in which to place the thread.
+     * @return true if the operation succeeds, false elsewise.
+     */
     public boolean makeThread(String title, int folderId) {
         try {
             PreparedStatement newregStatement = conn.prepareStatement
@@ -187,6 +198,15 @@ public class MakePost extends DBConn {
         }
     }
 
+    /**
+     * Makes a post in the database in a thread.
+     * @param postText the text that should be in the post.
+     * @param colourCode the colour code of the post, different colour means different thing.
+     * @param postType the post type, might be a reply or a post.
+     * @param threadId the id of the thread where the post is made.
+     * @param creator the creator of the post.
+     * @return the id of the post that was just made, if it fails null will be returned.
+     */
     public Integer makePost(String postText, String colourCode, String postType, int threadId, String creator) {
         try {
             PreparedStatement newregStatement = conn.prepareStatement
@@ -210,6 +230,12 @@ public class MakePost extends DBConn {
         return null;
     }
 
+    /**
+     * Connects a post with different tags in the database.
+     * @param postId the postId of the post which shall receive tags.
+     * @param tags the tags which should be associated with a post.
+     * @return true if the operation succeeds, false otherwise.
+     */
     public boolean connectTagsAndPost(int postId, String... tags) {
         try {
             for (String tag: tags) {
@@ -229,16 +255,24 @@ public class MakePost extends DBConn {
         }
     }
 
+    /**
+     * Returns the latest thread id.
+     * @return latest thread id.
+     */
     public int getThreadIdLatest() {
         return threadIdLatest;
     }
 
+    /**
+     * Returns the latest post id.
+     * @return latest post id.
+     */
     public int getPostIdLatest() {
         return postIdLatest;
     }
 
     public static void main(String[] args) throws SQLException {
-        MakePost mp = new MakePost("Task 2", "I don't quite get it", "exam", "question");
+        MakePost mp = new MakePost();
         mp.connect();
         //mp.showFolders();
         //mp.makeTag("vanskelig");
