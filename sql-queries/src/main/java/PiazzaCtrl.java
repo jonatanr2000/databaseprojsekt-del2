@@ -152,9 +152,9 @@ public class PiazzaCtrl extends DBConn {
                 if (postResult.getString("colourCode").matches("red")) {
                     String colour;
                     if (user.isInstrucor) {
-                        colour = "orange";
+                        colour = "blue";
                     }else {
-                        colour = "green";
+                        colour = "yellow";
                     }
                     PreparedStatement setColourStatement = conn.
                             prepareStatement("UPDATE piazza.post SET ColourCode = '"+colour+"' WHERE " +
@@ -174,7 +174,7 @@ public class PiazzaCtrl extends DBConn {
         try {
             PreparedStatement newRegStatement = conn
                 .prepareStatement("SELECT * FROM piazza.post NATURAL JOIN piazza.thread " +
-                                      "WHERE Title LIKE %"+word+"% OR PostText LIKE %"+word+"% ");
+                                      "WHERE (Title LIKE '%"+word+"%') OR (PostText LIKE '%"+word+"%') ");
             ResultSet rs = newRegStatement.executeQuery();
 
             while (rs.next()) {
@@ -189,10 +189,16 @@ public class PiazzaCtrl extends DBConn {
 
     public static void main(String[] args) {
 
+        String ja = "SELECT * FROM piazza.post NATURAL JOIN piazza.thread " +
+        "WHERE (Title LIKE %'"+"word"+"'%) OR (PostText LIKE %'"+"word"+"'%) ";
+        System.out.println(ja);
+
         PiazzaCtrl viewCtrl = new PiazzaCtrl();
         viewCtrl.connect();
         User user = viewCtrl.login("ha@gmail.com", "ok");
+        System.out.println(viewCtrl.search("NO"));
         viewCtrl.getStatistics();
+
 
         viewCtrl.checkReply(1, user);
     }

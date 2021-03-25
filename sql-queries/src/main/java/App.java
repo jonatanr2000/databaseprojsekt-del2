@@ -1,5 +1,3 @@
-import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
@@ -23,7 +21,7 @@ public class App {
     public void print(String text) throws InterruptedException {
         for (int i = 0; i < text.length(); i++) {
             System.out.print(text.charAt(i));
-            TimeUnit.MILLISECONDS.sleep(100); // in milliseconds
+            //TimeUnit.MILLISECONDS.sleep(100); // in milliseconds
         }
         System.out.println();
     }
@@ -34,7 +32,7 @@ public class App {
      *
      * @throws InterruptedException if the print function is interrupted.
      */
-    public void run() throws InterruptedException, SQLException {
+    public void run() throws InterruptedException {
         print("Welcome to low budget PIAZZA \n" +
                 "Please log in.");
         String action = "";
@@ -42,6 +40,7 @@ public class App {
             print("Type 'exit' if you want to close the program");
             if (piazzaCtrl.user == null) {
                 login();
+                action = "";
             } else {
                 print("Welcome to the main hub.");
                 while (!action.matches("log out") && !action.matches("exit")) {
@@ -64,7 +63,9 @@ public class App {
                         break;
                         case "log out":
                         case "exit": {
-                            //Do nothing
+                            piazzaCtrl.user = null;
+                            makePost.setUser(null);
+                            this.user = null;
                         }
                         break;
                         default:
@@ -94,9 +95,9 @@ public class App {
     }
 
     private void view_threads() throws InterruptedException {
-        List<Integer> threadIds = makePost.showThreads();
         String action = "";
         while (!action.matches("go_back")) {
+            List<Integer> threadIds = makePost.showThreads();
             print("go_back \t view_post<id> \t search:<search text>");
             action = scanner.nextLine();
             if (action.contains("view_post")) {
@@ -105,10 +106,13 @@ public class App {
                 view_thread(id);
             } else if (action.contains("search:")) {
                 String searchText = action.substring(7);
-                // List<Integer> indexes = piazzaCtrl.search(searchText);
-                List<Integer> indexes = Arrays.asList(1, 4, 5, 10);
-
-                makePost.showThreads(indexes);
+                print("searches for: " + searchText);
+                List<Integer> ids = piazzaCtrl.search(searchText.trim());
+                if (ids.size() > 0) {
+                    makePost.showThreads(ids);
+                }else {
+                    print("Found no posts matching the search criteria.");
+                }
             } else if (action.matches("go_back")) {
                 print("going back");
             } else {
@@ -122,10 +126,12 @@ public class App {
         int postID = makePost.showPostsInThread(id);
         String action = "";
         while (!action.matches("go_back")) {
+
             print("go_back \t make_reply \t like<id>");
             action = scanner.nextLine();
             if (action.contains("make_reply")) {
                 make_reply(postID);
+                makePost.showPostsInThread(id);
             } else if (action.contains("like")) {
                 Integer likeID = Integer.parseInt(action.substring(4));
                 piazzaCtrl.regLike(user.email, likeID);
@@ -155,7 +161,7 @@ public class App {
     /**
      * Guides the user in creating a post.
      */
-    private void create_post() throws InterruptedException, SQLException {
+    private void create_post() throws InterruptedException {
         makePost.showFolders();
         print("Please choose folder by id");
         int folderId = Integer.parseInt(scanner.nextLine());
@@ -175,7 +181,7 @@ public class App {
         print("created :" + " " + folderId + " " + title + " " + text);
     }
 
-    public static void main(String[] args) throws InterruptedException, SQLException {
+    public static void main(String[] args) throws InterruptedException {
         App app = new App();
         app.run();
     }
