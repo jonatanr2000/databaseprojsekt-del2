@@ -6,7 +6,7 @@ App -> MakePost : showThreads
 activate MakePost
 MakePost --> App
 deactivate MakePost
-App -> App : print
+
 activate App
 App --> App
 deactivate App
