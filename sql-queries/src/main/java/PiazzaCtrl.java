@@ -140,6 +140,11 @@ public class PiazzaCtrl extends DBConn {
         return stats;
     }
 
+    /**
+     * Check if a post has a reply or not. If it has, it will change the colour code by whom has answered it.
+     * @param inputPostID is an integer input representing a post_Id.
+     * @param user represents the user that is logged in.
+     */
     public void checkReply(int inputPostID, User user) {
         try {
             PreparedStatement getPostQuery = conn.
@@ -169,6 +174,11 @@ public class PiazzaCtrl extends DBConn {
         }
     }
 
+    /**
+     * Searches the database for specific keywords in posts.
+     * @param word is the keyword the student is searching for.
+     * @return a list of all Post_ID's values that contains the the key word. Or an empty list if no matches.
+     */
     public ArrayList<Integer> search(String word) {
         ArrayList<Integer> keyWords = new ArrayList<>();
         try {
@@ -177,13 +187,16 @@ public class PiazzaCtrl extends DBConn {
                                       "WHERE (Title LIKE '%"+word+"%') OR (PostText LIKE '%"+word+"%') ");
             ResultSet rs = newRegStatement.executeQuery();
 
+            //As long as rs has a row, it will add the post_Id to the keyWords list
             while (rs.next()) {
                 keyWords.add(rs.getInt("Post_Id"));
             }
+            //Will contain at least one or more Post_Id's
             return keyWords;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        //if rs is empty, it will return an empty list
         return new ArrayList<>();
     }
 
