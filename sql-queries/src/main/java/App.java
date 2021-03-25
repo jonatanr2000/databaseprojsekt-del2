@@ -150,9 +150,9 @@ public class App {
      * Views an induviual thread and all the posts in that thread.
      * User can make a new reply to the first post.
      * Or like one of the posts in the thread
-     * Technically they can like any post
+     * Technically they can like any post not just the ones shown.
      * @param id int of the thread being viewed
-     * @throws InterruptedException
+     * @throws InterruptedException if print is interrupted
      */
     private void view_thread(int id) throws InterruptedException {
         piazzaCtrl.view(user.email, id);
@@ -176,6 +176,11 @@ public class App {
         }
     }
 
+    /**
+     * Make a reply to the currently viewed thread.
+     * @param id int of the thread currently being viewed.
+     * @throws InterruptedException if print is interrupted.
+     */
     private void make_reply(int id) throws InterruptedException {
         print("text: ");
         String text = scanner.nextLine();
@@ -192,7 +197,13 @@ public class App {
     }
 
     /**
-     * Guides the user in creating a post.
+     * Prompts the user for folder id (choice), title and text of the post.
+     * Makes the post.
+     * Then, prompts the user for tags.
+     * Creates the tags that doesn't exit, and then connects the tags to the post.
+     * If the tags did not get connected, the post will exist without tags, "support" can fix this.
+     *
+     * (Here we think it is better to let the post exist without tags rather than deleting the post if the tags are not connected.)
      */
     private void create_post() throws InterruptedException {
         makePost.showFolders();
@@ -213,7 +224,7 @@ public class App {
         }
         print("created :" + " " + folderId + " " + title + " " + text);
     }
-
+    
     public static void main(String[] args) throws InterruptedException {
         App app = new App();
         app.run();
