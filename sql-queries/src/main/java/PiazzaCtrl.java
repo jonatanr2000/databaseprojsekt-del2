@@ -169,6 +169,24 @@ public class PiazzaCtrl extends DBConn {
         }
     }
 
+    public ArrayList<Integer> search(String word) {
+        ArrayList<Integer> keyWords = new ArrayList<>();
+        try {
+            PreparedStatement newRegStatement = conn
+                .prepareStatement("SELECT * FROM piazza.post NATURAL JOIN piazza.thread " +
+                                      "WHERE Title LIKE %"+word+"% OR PostText LIKE %"+word+"% ");
+            ResultSet rs = newRegStatement.executeQuery();
+
+            while (rs.next()) {
+                keyWords.add(rs.getInt("Post_Id"));
+            }
+            return keyWords;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
     public static void main(String[] args) {
 
         PiazzaCtrl viewCtrl = new PiazzaCtrl();
