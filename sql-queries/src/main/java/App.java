@@ -126,7 +126,8 @@ public class App {
      * @throws InterruptedException if print function is interrupted.
      */
     private void view_threads() throws InterruptedException {
-        List<Integer> threadIds = makePost.showThreads();
+        List<String> threads = makePost.getThreads();
+        print(threads);
         String action = "";
         while (!action.matches("go_back")) {
             print("go_back \t view_post<id> \t search:<search text>");
@@ -135,13 +136,14 @@ public class App {
                 print(action.substring(9));
                 int id = Integer.parseInt(action.substring(9));
                 view_thread(id);
-                makePost.showThreads();
+                threads = makePost.getThreads();
+                print(threads);
             } else if (action.contains("search:")) {
                 String searchText = action.substring(7);
                 print("searches for: " + searchText);
                 List<Integer> ids = piazzaCtrl.search(searchText.trim());
                 if (ids.size() > 0) {
-                    makePost.showThreads(ids);
+                    makePost.getThreads(ids);
                 }else {
                     print("Found no posts matching the search criteria.");
                 }
@@ -158,14 +160,14 @@ public class App {
      * User can make a new reply to the first post.
      * Or like one of the posts in the thread
      * Technically they can like any post not just the ones shown.
-     * @param id int of the thread being viewed
+     * @param threadID int of the thread being viewed
      * @throws InterruptedException if print is interrupted
      */
-    private void view_thread(int id) throws InterruptedException {
-        piazzaCtrl.view(user.email, id);
-        int postID = makePost.getPostInThread(id);
-        List<String> posts = makePost.getPostsInThread(id);
-        print(posts)
+    private void view_thread(int threadID) throws InterruptedException {
+        piazzaCtrl.view(user.email, threadID);
+        int postID = makePost.getPostInThread(threadID);
+        List<String> posts = makePost.getPostsInThread(threadID);
+        print(posts);
         String action = "";
         while (!action.matches("go_back")) {
 
@@ -173,7 +175,8 @@ public class App {
             action = scanner.nextLine();
             if (action.contains("make_reply")) {
                 make_reply(postID);
-                makePost.showPostsInThread(id);
+                posts = makePost.getPostsInThread(threadID);
+                print(posts);
             } else if (action.contains("like")) {
                 Integer likeID = Integer.parseInt(action.substring(4));
                 piazzaCtrl.regLike(user.email, likeID);
@@ -187,10 +190,10 @@ public class App {
 
     /**
      * Make a reply to the currently viewed thread.
-     * @param id int of the thread currently being viewed.
+     * @param postId int of the thread currently being viewed.
      * @throws InterruptedException if print is interrupted.
      */
-    private void make_reply(int id) throws InterruptedException {
+    private void make_reply(int postId) throws InterruptedException {
         print("text: ");
         String text = scanner.nextLine();
         String colour;
@@ -199,10 +202,11 @@ public class App {
         } else {
             colour = "green";
         }
-        int postID = makePost.makePost(text, colour, "reply", id, user.email);
+        int threadId = makePost.findThreadIdFromPostId(postId);
+        int postID = makePost.makePost(text, colour, "reply", threadId, user.email);
 
         print("creating reply:" + " " + postID + " " + " " + text);
-        piazzaCtrl.checkReply(id, user);
+        piazzaCtrl.checkReply(postID, user);
     }
 
     /**
@@ -215,7 +219,8 @@ public class App {
      * (Here we think it is better to let the post exist without tags rather than deleting the post if the tags are not connected.)
      */
     private void create_post() throws InterruptedException {
-        makePost.showFolders();
+        List<String> folders = makePost.showFolders();
+        print(folders);
         print("Please choose folder by id");
         int folderId = Integer.parseInt(scanner.nextLine());
         print("Title: ");
