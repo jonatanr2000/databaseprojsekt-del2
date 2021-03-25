@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The controller for the database actions.
+ */
 public class PiazzaCtrl extends DBConn {
 
     // Attributes
@@ -513,4 +516,3 @@ public class PiazzaCtrl extends DBConn {
         viewCtrl.checkReply(1, user);
     }
 }
-
