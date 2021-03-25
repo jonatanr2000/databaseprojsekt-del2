@@ -2,6 +2,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class PiazzaCtrl extends DBConn{
 
@@ -166,6 +167,22 @@ public class PiazzaCtrl extends DBConn{
                 }
             }
 
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void search(String word) {
+        ArrayList<String> keyWords = new ArrayList<>();
+        try {
+            PreparedStatement newRegStatement = conn
+                .prepareStatement("SELECT * FROM piazza.post NATURAL JOIN piazza.thread " +
+                                      "WHERE Title LIKE %"+word+"% OR PostText LIKE %"+word+"% ");
+            ResultSet rs = newRegStatement.executeQuery();
+
+            while (rs.next()) {
+                keyWords.add(rs.getString());
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
