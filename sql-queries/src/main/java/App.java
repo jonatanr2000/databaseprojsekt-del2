@@ -26,6 +26,12 @@ public class App {
         System.out.println();
     }
 
+    public void print(List<String> list) throws InterruptedException {
+        for (String text : list) {
+            print(text);
+        }
+    }
+
 
     /**
      * runs the application
@@ -157,7 +163,9 @@ public class App {
      */
     private void view_thread(int id) throws InterruptedException {
         piazzaCtrl.view(user.email, id);
-        int postID = makePost.showPostsInThread(id);
+        int postID = makePost.getPostInThread(id);
+        List<String> posts = makePost.getPostsInThread(id);
+        print(posts)
         String action = "";
         while (!action.matches("go_back")) {
 
