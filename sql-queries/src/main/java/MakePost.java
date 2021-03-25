@@ -92,12 +92,34 @@ public class MakePost extends DBConn {
     }
 
     /**
-     * Returns a list of threads as strings with thread id, title and the text of the post. The
-     * threads that will be returned are the one with an id specified in the parameters.
-     * @param indexes the ids of the threads that are to be shown.
+     * Returns a list of the thread ids that exist in the database.
+     * @return a list of integers if the method succeeds, an empty list otherwise.
+     */
+    public List<Integer> getThreadId() {
+        List<Integer> threadList = new ArrayList<>();
+        try {
+            PreparedStatement newregStatement = conn.prepareStatement
+                    ("select piazza.post.Thread_Id, piazza.thread.Title, piazza.post.PostText \n" +
+                            "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
+                            "where post.PostType = 'post' \n" +
+                            "order by post.Thread_Id; ");
+            ResultSet rs = newregStatement.executeQuery();
+            while(rs.next()) {
+                threadList.add(rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return threadList;
+    }
+
+    /**
+     * Returns a list of posts as strings with thread id, title and the text of the post. The
+     * posts that will be returned are the one with an id specified in the parameters.
+     * @param indexes the ids of the posts that are to be shown.
      * @return list of strings if the method succeeds, an empty list otherwise.
      */
-    public List<String> getThreads(List<Integer> indexes) {
+    public List<String> getPosts(List<Integer> indexes) {
         try {
             if (indexes.size() > 0) {
                 List<String> threadList = new ArrayList<>();
@@ -266,6 +288,24 @@ public class MakePost extends DBConn {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Integer findThreadIdFromPostId(int postId) {
+        Integer threadId = null;
+        try {
+            PreparedStatement newregStatement = conn.prepareStatement(
+                    "select post.Thread_Id\n" +
+                        "from piazza.post\n" +
+                        "where post.Post_Id = ( ? );"
+            );
+            newregStatement.setInt(1, postId);
+            ResultSet rs = newregStatement.executeQuery();
+            rs.next();
+            threadId = rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return threadId;
     }
 
     /**

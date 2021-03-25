@@ -143,7 +143,8 @@ public class App {
                 print("searches for: " + searchText);
                 List<Integer> ids = piazzaCtrl.search(searchText.trim());
                 if (ids.size() > 0) {
-                    makePost.getThreads(ids);
+                    List<String> posts = makePost.getPosts(ids);
+                    print(posts);
                 }else {
                     print("Found no posts matching the search criteria.");
                 }

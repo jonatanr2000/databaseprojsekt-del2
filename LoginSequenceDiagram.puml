@@ -1,10 +1,11 @@
 @startuml
+box "Login sequence" #lightgreen
 participant Actor
-Actor -> App : login
+Actor -> App : login \n(with email \n and password)
 activate App
-App -> PiazzaCtrl : login
+App -> PiazzaCtrl : login \n(with email \n and password)
 activate PiazzaCtrl
-PiazzaCtrl -> User : new
+PiazzaCtrl -> User : new user
 activate User
 User --> PiazzaCtrl
 deactivate User

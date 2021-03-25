@@ -1,6 +1,7 @@
 @startuml
+box "Make Post" #lightgreen
 participant Actor
-Actor -> App : create_post
+Actor -> App : create_post \n(postText \n colourCode \n postType \n threadId \n creator)
 activate App
 App -> MakePost : showFolders
 activate MakePost
@@ -21,6 +22,6 @@ activate MakePost
 MakePost --> MakePost
 deactivate MakePost
 MakePost --> App
-deactivate MakePost
+deactivate MakePost 
 return
 @enduml
