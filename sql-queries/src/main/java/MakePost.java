@@ -294,7 +294,7 @@ public class MakePost extends DBConn {
         //mp.connectTagsAndPost(mp.postIdLatest, "exam", "whatup", "hellothere");
         //mp.showThreads();
         //mp.showPostsInThread(1);
-        System.out.println(mp.showThreads(Arrays.asList(1, 2, 4, 5)));
+        //System.out.println(mp.showThreads(Arrays.asList(1, 2, 4, 5)));
     }
 
 }
