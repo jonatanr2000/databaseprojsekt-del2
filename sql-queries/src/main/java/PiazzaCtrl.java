@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The controller for the database actions.
+ */
 public class PiazzaCtrl extends DBConn {
 
     // Attributes
@@ -13,17 +16,24 @@ public class PiazzaCtrl extends DBConn {
     private int postIdLatest;
 
 
-    //Create and connect the controller
+    /**
+     * Create and connect the controller
+     */
     public PiazzaCtrl() {
         this.connect();
     }
 
-    public void view(String email, int postId) {
+    /**
+     * Creates a view between user and the thread, meaning that the user has now seen the thread.
+     * @param email String of the user.
+     * @param threadId int of the thread being viewed.
+     */
+    public void view(String email, int threadId) {
         try {
-            System.out.println(email + postId);
+            System.out.println(email + threadId);
             PreparedStatement regViewStatement = conn.prepareStatement("INSERT INTO piazza.view VALUES ( (?), (?) )");
             regViewStatement.setString(1, email);
-            regViewStatement.setInt(2, postId);
+            regViewStatement.setInt(2, threadId);
             regViewStatement.execute();
         } catch (SQLException e) {
             //pass
@@ -31,6 +41,11 @@ public class PiazzaCtrl extends DBConn {
     }
 
 
+    /**
+     * Creates a like between user and the post, meaning that the user has now liked the post.
+     * @param email String of the user.
+     * @param postId int of the thread being viewed.
+     */
     public void regLike(String email, Integer postId) {
         if (email != null && postId != null) {
             try {
@@ -339,14 +354,7 @@ public class PiazzaCtrl extends DBConn {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        try {
-            PreparedStatement viewed_post = conn.prepareStatement("INSERT INTO piazza.view VALUES ((?), (?))");
-            viewed_post.setString(1, user.email);
-            viewed_post.setInt(2, threadId);
-            viewed_post.execute();
-        } catch (SQLException e) {
-            //pass
-        }
+        view(user.email, threadId);
         return postList;
     }
 
