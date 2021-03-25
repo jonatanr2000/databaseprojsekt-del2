@@ -45,33 +45,35 @@ public class MakePost extends DBConn {
             newregStatement.execute();
             return true;
         } catch (SQLException e) {
-            System.out.println("This tag already exists");
             return false;
         }
     }
 
     /**
-     * Shows all the folders that exist in the database with their associated ids.
+     * Returns a list of folders as strings with folder id and folder name.
+     * @return the list of strings, null otherwise.
      */
-    public void showFolders() {
+    public List<String> showFolders() {
+        List<String> folderList = new ArrayList<>();
         try {
             PreparedStatement newregStatement = conn.prepareStatement("select * from piazza.folder");
             ResultSet rs = newregStatement.executeQuery();
             while(rs.next()) {
-                System.out.println("id: " + rs.getInt(1) + " " + rs.getString(2));
+                folderList.add("id: " + rs.getInt(1) + " " + rs.getString(2));
             }
         } catch (SQLException e) {
-            System.out.println("Failed to find folders.");
+            e.printStackTrace();
         }
+        return folderList;
     }
 
     /**
-     * Shows the threads in the database.
-     * @return a list with the thread ids in the database. Null otherwise.
+     * Returns a list of threads as strings with thread id, title and the text of the post.
+     * @return the list of threads, an empty string otherwise.
      */
-    public List<Integer> showThreads() {
+    public List<String> getThreads() {
+        List<String> threadList = new ArrayList<>();
         try {
-            List<Integer> threadIds = new ArrayList<>();
             PreparedStatement newregStatement = conn.prepareStatement
                     ("select piazza.post.Thread_Id, piazza.thread.Title, piazza.post.PostText \n" +
                             "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
@@ -79,26 +81,48 @@ public class MakePost extends DBConn {
                             "order by post.Thread_Id; ");
             ResultSet rs = newregStatement.executeQuery();
             while(rs.next()) {
-                threadIds.add(rs.getInt(1));
-                System.out.println("thread id: " + rs.getInt(1) +
-                        " title: " + rs.getString(2) +
-                        " text: " + rs.getString(3) + "\n");
+                threadList.add( "thread id: " + rs.getInt(1) +
+                                " title: " + rs.getString(2) +
+                                " text: " + rs.getString(3) + "\n");
             }
-            return threadIds;
         } catch (SQLException e) {
-            System.out.println("Failed to find threads.");
-            return null;
+            e.printStackTrace();
         }
+        return threadList;
     }
 
     /**
-     * Shows the threads with the ids that are given.
-     * @param indexes the ids of the threads that are wanted to be seen.
-     * @return list of thread ids that are shown.
+     * Returns a list of the thread ids that exist in the database.
+     * @return a list of integers if the method succeeds, an empty list otherwise.
      */
-    public List<Integer> showThreads(List<Integer> indexes) {
+    public List<Integer> getThreadId() {
+        List<Integer> threadList = new ArrayList<>();
+        try {
+            PreparedStatement newregStatement = conn.prepareStatement
+                    ("select piazza.post.Thread_Id, piazza.thread.Title, piazza.post.PostText \n" +
+                            "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
+                            "where post.PostType = 'post' \n" +
+                            "order by post.Thread_Id; ");
+            ResultSet rs = newregStatement.executeQuery();
+            while(rs.next()) {
+                threadList.add(rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return threadList;
+    }
+
+    /**
+     * Returns a list of posts as strings with thread id, title and the text of the post. The
+     * posts that will be returned are the one with an id specified in the parameters.
+     * @param indexes the ids of the posts that are to be shown.
+     * @return list of strings if the method succeeds, an empty list otherwise.
+     */
+    public List<String> getPosts(List<Integer> indexes) {
         try {
             if (indexes.size() > 0) {
+                List<String> threadList = new ArrayList<>();
                 String listString = indexes.toString();
                 listString = "(" + listString.substring(1, listString.length() - 1) + ")";
                 //Since the input is a list of integers we don't think it's likely that this can be used to sql-injects.
@@ -109,11 +133,11 @@ public class MakePost extends DBConn {
                                 "order by post.Thread_Id; ");
                 ResultSet rs = newregStatement.executeQuery();
                 while (rs.next()) {
-                    System.out.println("thread id: " + rs.getInt(1) +
-                            " title: " + rs.getString(2) +
-                            " text: " + rs.getString(3) + "\n");
+                    threadList.add( "thread id: " + rs.getInt(1) +
+                                    " title: " + rs.getString(2) +
+                                    " text: " + rs.getString(3) + "\n");
                 }
-                return indexes;
+                return threadList;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -123,12 +147,13 @@ public class MakePost extends DBConn {
     }
 
     /**
-     * Displays all the posts in a given thread.
-     * @param threadId the id of the thread.
-     * @return the postId of the post with post type = 'post' in the thread. Null elsewise.
+     * Returns a list of strings with post id, text, post type and creator of the
+     * posts in a thread.
+     * @param threadId of the thread that the posts will be retrieved from.
+     * @return a list of strings if the method succeeds, an empty list elsewise.
      */
-    public Integer showPostsInThread(int threadId) {
-        Integer postID = null;
+    public List<String> getPostsInThread(int threadId) {
+        List<String> postList = new ArrayList<>();
         try {
             PreparedStatement newregStatement = conn.prepareStatement
                     ("select post.Post_Id, post.PostText, post.PostType, post.Creator \n" +
@@ -138,13 +163,12 @@ public class MakePost extends DBConn {
             newregStatement.setInt(1, threadId);
             ResultSet rs = newregStatement.executeQuery();
             while (rs.next()) {
-                System.out.println("post id: " + rs.getInt(1) +
-                        " text: " + rs.getString(2) +
-                        " post type: " + rs.getString(3) +
-                        " creator: " + rs.getString(4) + "\n");
+                postList.add(   "post id: " + rs.getInt(1) +
+                                " text: " + rs.getString(2) +
+                                " post type: " + rs.getString(3) +
+                                " creator: " + rs.getString(4) + "\n");
             }
-        }catch (SQLException e) {
-            System.out.println("Could not find posts.");
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         try {
@@ -155,7 +179,16 @@ public class MakePost extends DBConn {
         } catch (SQLException e) {
             //pass
         }
+        return postList;
+    }
 
+    /**
+     * Finds the post with post type = 'post' in the given thread.
+     * @param threadId of the thread.
+     * @return postId of the post with post type = 'post' in the given thread.
+     */
+    public Integer getPostInThread(int threadId) {
+        Integer postID = null;
         try {
             // Finds the post with post type = 'post' in the thread
             PreparedStatement postInThread = conn.prepareStatement(
@@ -178,7 +211,7 @@ public class MakePost extends DBConn {
      * Makes a thread with a title in a given folder.
      * @param title is the title of the thread.
      * @param folderId is the id of the folder in which to place the thread.
-     * @return true if the operation succeeds, false elsewise.
+     * @return true if the operation succeeds, false otherwise.
      */
     public boolean makeThread(String title, int folderId) {
         try {
@@ -227,9 +260,9 @@ public class MakePost extends DBConn {
             this.postIdLatest = lastPostId.getInt(1);
             return this.postIdLatest;
         } catch (SQLException e) {
-            System.out.println("Could not make a post.");
+            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     /**
@@ -252,7 +285,7 @@ public class MakePost extends DBConn {
             }
             return true;
         } catch (SQLException e) {
-            System.out.println("Could not connect tags and posts.");
+            e.printStackTrace();
             return false;
         }
     }
@@ -283,7 +316,7 @@ public class MakePost extends DBConn {
         //mp.connectTagsAndPost(mp.postIdLatest, "exam", "whatup", "hellothere");
         //mp.showThreads();
         //mp.showPostsInThread(1);
-        System.out.println(mp.showThreads(Arrays.asList(1, 2, 4, 5)));
+        //System.out.println(mp.showThreads(Arrays.asList(1, 2, 4, 5)));
     }
 
 }
