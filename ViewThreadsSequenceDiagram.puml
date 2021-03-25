@@ -1,0 +1,78 @@
+@startuml
+participant Actor
+Actor -> App : view_threads
+activate App
+App -> MakePost : showThreads
+activate MakePost
+MakePost --> App
+deactivate MakePost
+App -> App : print
+activate App
+App --> App
+deactivate App
+App -> App : print
+activate App
+App --> App
+deactivate App
+App -> App : view_thread
+activate App
+App -> PiazzaCtrl : view
+activate PiazzaCtrl
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> MakePost : showPostsInThread
+activate MakePost
+MakePost --> App
+deactivate MakePost
+App -> App : print
+activate App
+App --> App
+deactivate App
+App -> App : make_reply
+activate App
+App -> App : print
+activate App
+App --> App
+deactivate App
+App -> MakePost : makePost
+activate MakePost
+MakePost --> App
+deactivate MakePost
+App -> App : print
+activate App
+App --> App
+deactivate App
+App -> PiazzaCtrl : checkReply
+activate PiazzaCtrl
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App --> App
+deactivate App
+App -> PiazzaCtrl : regLike
+activate PiazzaCtrl
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> App : print
+activate App
+App --> App
+deactivate App
+App -> App : print
+activate App
+App --> App
+deactivate App
+App --> App
+deactivate App
+App -> MakePost : showThreads
+activate MakePost
+MakePost --> App
+deactivate MakePost
+App -> App : print
+activate App
+App --> App
+deactivate App
+App -> App : print
+activate App
+App --> App
+deactivate App
+return
+@enduml

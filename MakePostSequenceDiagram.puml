@@ -1,0 +1,26 @@
+@startuml
+participant Actor
+Actor -> App : create_post
+activate App
+App -> MakePost : showFolders
+activate MakePost
+MakePost --> App
+deactivate MakePost
+App -> MakePost : makeThread
+activate MakePost
+MakePost --> App
+deactivate MakePost
+App -> MakePost : makePost
+activate MakePost
+MakePost --> App
+deactivate MakePost
+App -> MakePost : connectTagsAndPost
+activate MakePost
+MakePost -> MakePost : makeTag
+activate MakePost
+MakePost --> MakePost
+deactivate MakePost
+MakePost --> App
+deactivate MakePost
+return
+@enduml

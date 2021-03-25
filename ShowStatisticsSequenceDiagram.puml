@@ -1,0 +1,10 @@
+@startuml
+participant Actor
+Actor -> App : getStatistics
+activate App
+App -> App : print
+activate App
+App --> App
+deactivate App
+return
+@enduml

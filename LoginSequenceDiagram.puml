@@ -1,0 +1,18 @@
+@startuml
+participant Actor
+Actor -> App : login
+activate App
+App -> PiazzaCtrl : login
+activate PiazzaCtrl
+PiazzaCtrl -> User : new
+activate User
+User --> PiazzaCtrl
+deactivate User
+PiazzaCtrl -> PiazzaCtrl : updateLastActive
+activate PiazzaCtrl
+PiazzaCtrl --> PiazzaCtrl
+deactivate PiazzaCtrl
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+return
+@enduml
