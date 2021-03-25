@@ -120,15 +120,16 @@ public class App {
      * @throws InterruptedException if print function is interrupted.
      */
     private void view_threads() throws InterruptedException {
+        List<Integer> threadIds = makePost.showThreads();
         String action = "";
         while (!action.matches("go_back")) {
-            List<Integer> threadIds = makePost.showThreads();
             print("go_back \t view_post<id> \t search:<search text>");
             action = scanner.nextLine();
             if (action.contains("view_post")) {
                 print(action.substring(9));
                 int id = Integer.parseInt(action.substring(9));
                 view_thread(id);
+                makePost.showThreads();
             } else if (action.contains("search:")) {
                 String searchText = action.substring(7);
                 print("searches for: " + searchText);
