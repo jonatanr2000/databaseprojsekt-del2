@@ -290,6 +290,24 @@ public class MakePost extends DBConn {
         }
     }
 
+    public Integer findThreadIdFromPostId(int postId) {
+        Integer threadId = null;
+        try {
+            PreparedStatement newregStatement = conn.prepareStatement(
+                    "select post.Thread_Id\n" +
+                        "from post\n" +
+                        "where post.Post_Id = ( ? );"
+            );
+            newregStatement.setInt(1, postId);
+            ResultSet rs = newregStatement.executeQuery();
+            rs.next();
+            threadId = rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return threadId;
+    }
+
     /**
      * Returns the latest thread id.
      * @return latest thread id.
