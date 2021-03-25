@@ -300,7 +300,7 @@ public class MakePost extends DBConn {
         try {
             PreparedStatement newregStatement = conn.prepareStatement(
                     "select post.Thread_Id\n" +
-                        "from post\n" +
+                        "from piazza.post\n" +
                         "where post.Post_Id = ( ? );"
             );
             newregStatement.setInt(1, postId);
