@@ -290,6 +290,11 @@ public class MakePost extends DBConn {
         }
     }
 
+    /**
+     * Returns the thread id of a post with the given post id.
+     * @param postId of the post where to find the thread id.
+     * @return thread id of the post if the method succeeds, null otherwise.
+     */
     public Integer findThreadIdFromPostId(int postId) {
         Integer threadId = null;
         try {
