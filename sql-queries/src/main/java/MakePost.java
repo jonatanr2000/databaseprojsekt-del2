@@ -92,9 +92,10 @@ public class MakePost extends DBConn {
     }
 
     /**
-     * Shows the threads with the ids that are given.
-     * @param indexes the ids of the threads that are wanted to be seen.
-     * @return list of thread ids that are shown.
+     * Returns a list of threads as strings with thread id, title and the text of the post. The
+     * threads that will be returned are the one with an id specified in the parameters.
+     * @param indexes the ids of the threads that are to be shown.
+     * @return list of strings if the method succeeds, an empty list otherwise.
      */
     public List<String> showThreads(List<Integer> indexes) {
         try {
