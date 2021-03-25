@@ -224,7 +224,7 @@ public class App {
         }
         print("created :" + " " + folderId + " " + title + " " + text);
     }
-    
+
     public static void main(String[] args) throws InterruptedException {
         App app = new App();
         app.run();
