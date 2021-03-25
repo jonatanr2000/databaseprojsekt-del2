@@ -68,15 +68,9 @@ public class PiazzaCtrl extends DBConn {
                                 userResult.getString("Surname"),
                                 userResult.getObject("Last_Active", LocalDateTime.class),
                                 userResult.getBoolean("Is_Instructor"));
-                        System.out.println("Welcome user: " + this.user.email);
                         updateLastActive(email, LocalDateTime.now());
-                    } else {
-                        System.out.println("Password is wrong");
                     }
-                } else {
-                    System.out.println("Username is wrong");
                 }
-
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -122,20 +116,14 @@ public class PiazzaCtrl extends DBConn {
                             "ORDER BY COUNT(DISTINCT view.Thread_Id) DESC");
                     ResultSet statisticsResult = statisticsQuery.executeQuery();
 
-
                     //prints out the results
                     while (statisticsResult.next()) {
                         stats.add(statisticsResult.getString(1) + " has seen: " + statisticsResult.getInt(2) + " threads, and has created: " + statisticsResult.getInt(3) + " posts.");
                     }
-
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            } else {
-                System.out.println("You must be an instructor to see this.");
             }
-        } else {
-            System.out.println("You must be logged in to see this content");
         }
         return stats;
     }
@@ -180,7 +168,7 @@ public class PiazzaCtrl extends DBConn {
      * @return a list of all Post_ID's values that contains the the key word. Or an empty list if no matches.
      */
     public ArrayList<Integer> search(String word) {
-        ArrayList<Integer> keyWords = new ArrayList<>();
+        ArrayList<Integer> ids = new ArrayList<>();
         try {
             PreparedStatement newRegStatement = conn
                 .prepareStatement("SELECT * FROM piazza.post NATURAL JOIN piazza.thread " +
@@ -189,12 +177,12 @@ public class PiazzaCtrl extends DBConn {
 
             //As long as rs has a row, it will add the post_Id to the keyWords list
             while (rs.next()) {
-                keyWords.add(rs.getInt("Post_Id"));
+                ids.add(rs.getInt("Post_Id"));
             }
             //Will contain at least one or more Post_Id's
-            return keyWords;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            return ids;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         //if rs is empty, it will return an empty list
         return new ArrayList<>();

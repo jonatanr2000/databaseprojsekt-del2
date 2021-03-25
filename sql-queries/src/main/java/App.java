@@ -44,7 +44,7 @@ public class App {
             } else {
                 print("Welcome to the main hub.");
                 while (!action.matches("log out") && !action.matches("exit")) {
-                    print("create post \t view posts \t statistics \t log out");
+                    print("create post \t view threads \t statistics \t log out");
                     print("What do you want to do?");
 
                     action = scanner.nextLine();
@@ -53,7 +53,7 @@ public class App {
                             this.create_post();
                         }
                         break;
-                        case "view posts": {
+                        case "view threads": {
                             this.view_threads();
                         }
                         break;
@@ -77,13 +77,29 @@ public class App {
         }
     }
 
+    /**
+     * Views the statistics.
+     * Checks on user is done in piazzaCtrl
+     * If the user doesn't have the privileges to view statistics, they will be shown a error message instead.
+     * @throws InterruptedException if print function is interrupted.
+     */
     private void getStatistics() throws InterruptedException {
         List<String> stats = piazzaCtrl.getStatistics();
+        if (stats.isEmpty()) {
+            print("you must be logged in as an instructor to view the stats. If you are logged in as " +
+                    "an instructor, please contact support.");
+        }
         for (String line : stats) {
             print(line);
         }
     }
 
+    /**
+     * Prompts the user for email and password (and sells it to China).
+     * Tries to log the user in.
+     * User gets feedback if email or password is wrong.
+     * @throws InterruptedException if print function is interrupted
+     */
     private void login() throws InterruptedException {
         print("Email: ");
         String email = scanner.nextLine().trim();
@@ -92,18 +108,28 @@ public class App {
         print("logging on with, email: " + email + " and password " + password);
         user = piazzaCtrl.login(email, password);
         makePost.setUser(user);
+        if (user == null) {
+            print("username or password is wrong.");
+        }
     }
 
+    /**
+     * Shows all the threads.
+     * Gives option to go back, view an individual thread or search for posts.
+     * If a user wants to see a thread or search for a post, they will be shown that.
+     * @throws InterruptedException if print function is interrupted.
+     */
     private void view_threads() throws InterruptedException {
+        List<Integer> threadIds = makePost.showThreads();
         String action = "";
         while (!action.matches("go_back")) {
-            List<Integer> threadIds = makePost.showThreads();
             print("go_back \t view_post<id> \t search:<search text>");
             action = scanner.nextLine();
             if (action.contains("view_post")) {
                 print(action.substring(9));
                 int id = Integer.parseInt(action.substring(9));
                 view_thread(id);
+                makePost.showThreads();
             } else if (action.contains("search:")) {
                 String searchText = action.substring(7);
                 print("searches for: " + searchText);
@@ -121,6 +147,14 @@ public class App {
         }
     }
 
+    /**
+     * Views an induviual thread and all the posts in that thread.
+     * User can make a new reply to the first post.
+     * Or like one of the posts in the thread
+     * Technically they can like any post not just the ones shown.
+     * @param id int of the thread being viewed
+     * @throws InterruptedException if print is interrupted
+     */
     private void view_thread(int id) throws InterruptedException {
         piazzaCtrl.view(user.email, id);
         int postID = makePost.showPostsInThread(id);
@@ -143,6 +177,11 @@ public class App {
         }
     }
 
+    /**
+     * Make a reply to the currently viewed thread.
+     * @param id int of the thread currently being viewed.
+     * @throws InterruptedException if print is interrupted.
+     */
     private void make_reply(int id) throws InterruptedException {
         print("text: ");
         String text = scanner.nextLine();
@@ -159,7 +198,13 @@ public class App {
     }
 
     /**
-     * Guides the user in creating a post.
+     * Prompts the user for folder id (choice), title and text of the post.
+     * Makes the post.
+     * Then, prompts the user for tags.
+     * Creates the tags that doesn't exit, and then connects the tags to the post.
+     * If the tags did not get connected, the post will exist without tags, "support" can fix this.
+     *
+     * (Here we think it is better to let the post exist without tags rather than deleting the post if the tags are not connected.)
      */
     private void create_post() throws InterruptedException {
         makePost.showFolders();
