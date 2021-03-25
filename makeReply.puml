@@ -1,0 +1,53 @@
+@startuml
+box #lightgreen
+participant Actor
+Actor -> App : view_threads
+activate App #gold
+App -> PiazzaCtrl : view_threads
+PiazzaCtrl --> App
+App --> Actor
+Actor -> App : input thread
+App -> App : view_thread
+activate App #silver
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : getPostInThread
+activate PiazzaCtrl #silver
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : getPostsInThread
+activate PiazzaCtrl #silver
+PiazzaCtrl -> PiazzaCtrl : view
+activate PiazzaCtrl #indigo
+PiazzaCtrl --> PiazzaCtrl
+deactivate PiazzaCtrl
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App --> Actor
+Actor -> App : make_reply \n(input: replyText, tags)
+App -> App : make_reply
+activate App #indigo
+App -> PiazzaCtrl : findThreadIdFromPostId
+activate PiazzaCtrl #indigo
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : makePost
+activate PiazzaCtrl #indigo
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+
+App -> PiazzaCtrl :connectTagsAndPost
+activate PiazzaCtrl #indigo
+
+PiazzaCtrl -> PiazzaCtrl: makeTag
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+
+App -> PiazzaCtrl : checkReply
+activate PiazzaCtrl #indigo
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App --> App
+deactivate App
+
+return
+@enduml

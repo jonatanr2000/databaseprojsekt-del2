@@ -1,0 +1,17 @@
+@startuml
+box #lightgreen
+participant Actor
+Actor -> App : view thread
+activate App #gold
+App --> Actor
+Actor -> App : search
+App -> PiazzaCtrl : search
+activate PiazzaCtrl #silver
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : getPosts
+activate PiazzaCtrl #silver
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+return
+@enduml

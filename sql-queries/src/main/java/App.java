@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 
 public class App {
@@ -19,11 +20,16 @@ public class App {
     public void print(String text) throws InterruptedException {
         for (int i = 0; i < text.length(); i++) {
             System.out.print(text.charAt(i));
-            //TimeUnit.MILLISECONDS.sleep(100); // in milliseconds
+            TimeUnit.MILLISECONDS.sleep(100); // For dramatic effect <3
         }
         System.out.println();
     }
 
+    /**
+     * Prints out the text in the list in a slow fashion.
+     * @param list List<String> that should be printed.
+     * @throws InterruptedException if the printing is interrupted.
+     */
     public void print(List<String> list) throws InterruptedException {
         for (String text : list) {
             print(text);
@@ -42,7 +48,7 @@ public class App {
         String action = "";
         while (!action.matches("exit")) {
             print("Type 'exit' if you want to close the program");
-            if (piazzaCtrl.user == null) {
+            if (user == null) {
                 login();
                 action = "";
             } else {
@@ -67,7 +73,6 @@ public class App {
                         break;
                         case "log out":
                         case "exit": {
-                            piazzaCtrl.user = null;
                             piazzaCtrl.setUser(null);
                             this.user = null;
                         }
@@ -93,9 +98,7 @@ public class App {
             print("you must be logged in as an instructor to view the stats. If you are logged in as " +
                     "an instructor, please contact support.");
         }
-        for (String line : stats) {
-            print(line);
-        }
+        print(stats);
     }
 
     /**
@@ -123,7 +126,7 @@ public class App {
      * If a user wants to see a thread or search for a post, they will be shown that.
      * @throws InterruptedException if print function is interrupted.
      */
-    private void view_theads() throws InterruptedException {
+    private void view_threads() throws InterruptedException {
         List<String> threads = piazzaCtrl.getThreads();
         print(threads);
         String action = "";
@@ -163,7 +166,6 @@ public class App {
      * @throws InterruptedException if print is interrupted
      */
     private void view_thread(int threadID) throws InterruptedException {
-        piazzaCtrl.view(user.email, threadID);
         int postID = piazzaCtrl.getPostInThread(threadID);
         List<String> posts = piazzaCtrl.getPostsInThread(threadID);
         print(posts);
@@ -195,6 +197,9 @@ public class App {
     private void make_reply(int postId) throws InterruptedException {
         print("text: ");
         String text = scanner.nextLine();
+        print("tags: ");
+        String tags = scanner.nextLine();
+        String[] tager = tags.split(" ");
         String colour;
         if (user.isInstrucor) {
             colour = "orange";
@@ -203,6 +208,9 @@ public class App {
         }
         int threadId = piazzaCtrl.findThreadIdFromPostId(postId);
         int postID = piazzaCtrl.makePost(text, colour, "reply", threadId, user.email);
+
+
+        piazzaCtrl.connectTagsAndPost(postID, tager);
 
         print("creating reply:" + " " + postID + " " + " " + text);
         piazzaCtrl.checkReply(postID, user);

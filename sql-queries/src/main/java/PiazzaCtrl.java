@@ -11,9 +11,10 @@ import java.util.List;
 public class PiazzaCtrl extends DBConn {
 
     // Attributes
-    public User user;
     private int threadIdLatest;
     private int postIdLatest;
+    private User user;
+
 
 
     /**
@@ -120,7 +121,7 @@ public class PiazzaCtrl extends DBConn {
      * This is only available for instructors
      */
     public List<String> getStatistics() {
-        List<String> stats = new ArrayList<String>();
+        List<String> stats = new ArrayList<>();
         //Checks that the user is logged in and is an instructor
         if (this.user != null) {
             if (this.user.isInstrucor) {
@@ -219,13 +220,12 @@ public class PiazzaCtrl extends DBConn {
      * Makes a new tag, but not if the tag already exists.
      * @param tag the tag
      * @return false if tag exists, true if tag is created
-     * @throws SQLException
      */
-    public boolean makeTag(String tag) throws SQLException {
+    public boolean makeTag(String tag){
         try {
-            PreparedStatement newregStatement = conn.prepareStatement("INSERT INTO piazza.tag values( (?) )");
-            newregStatement.setString(1, tag);
-            newregStatement.execute();
+            PreparedStatement insertViewStatement = conn.prepareStatement("INSERT INTO piazza.tag values( (?) )");
+            insertViewStatement.setString(1, tag);
+            insertViewStatement.execute();
             return true;
         } catch (SQLException e) {
             return false;
@@ -239,8 +239,8 @@ public class PiazzaCtrl extends DBConn {
     public List<String> showFolders() {
         List<String> folderList = new ArrayList<>();
         try {
-            PreparedStatement newregStatement = conn.prepareStatement("select * from piazza.folder");
-            ResultSet rs = newregStatement.executeQuery();
+            PreparedStatement getFoldersQuery = conn.prepareStatement("select * from piazza.folder");
+            ResultSet rs = getFoldersQuery.executeQuery();
             while(rs.next()) {
                 folderList.add("id: " + rs.getInt(1) + " " + rs.getString(2));
             }
@@ -257,38 +257,16 @@ public class PiazzaCtrl extends DBConn {
     public List<String> getThreads() {
         List<String> threadList = new ArrayList<>();
         try {
-            PreparedStatement newregStatement = conn.prepareStatement
+            PreparedStatement getThreadsQuery = conn.prepareStatement
                     ("select piazza.post.Thread_Id, piazza.thread.Title, piazza.post.PostText \n" +
                             "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
                             "where post.PostType = 'post' \n" +
                             "order by post.Thread_Id; ");
-            ResultSet rs = newregStatement.executeQuery();
+            ResultSet rs = getThreadsQuery.executeQuery();
             while(rs.next()) {
                 threadList.add( "thread id: " + rs.getInt(1) +
                         " title: " + rs.getString(2) +
                         " text: " + rs.getString(3) + "\n");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return threadList;
-    }
-
-    /**
-     * Returns a list of the thread ids that exist in the database.
-     * @return a list of integers if the method succeeds, an empty list otherwise.
-     */
-    public List<Integer> getThreadId() {
-        List<Integer> threadList = new ArrayList<>();
-        try {
-            PreparedStatement newregStatement = conn.prepareStatement
-                    ("select piazza.post.Thread_Id, piazza.thread.Title, piazza.post.PostText \n" +
-                            "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
-                            "where post.PostType = 'post' \n" +
-                            "order by post.Thread_Id; ");
-            ResultSet rs = newregStatement.executeQuery();
-            while(rs.next()) {
-                threadList.add(rs.getInt(1));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -309,12 +287,12 @@ public class PiazzaCtrl extends DBConn {
                 String listString = indexes.toString();
                 listString = "(" + listString.substring(1, listString.length() - 1) + ")";
                 //Since the input is a list of integers we don't think it's likely that this can be used to sql-injects.
-                PreparedStatement newregStatement = conn.prepareStatement
+                PreparedStatement getPostsInList = conn.prepareStatement
                         ("select piazza.post.Thread_Id, piazza.thread.Title, piazza.post.PostText \n" +
                                 "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
                                 "where post.Post_Id in " + listString + "  \n " +
                                 "order by post.Thread_Id; ");
-                ResultSet rs = newregStatement.executeQuery();
+                ResultSet rs = getPostsInList.executeQuery();
                 while (rs.next()) {
                     threadList.add( "thread id: " + rs.getInt(1) +
                             " title: " + rs.getString(2) +
@@ -333,18 +311,18 @@ public class PiazzaCtrl extends DBConn {
      * Returns a list of strings with post id, text, post type and creator of the
      * posts in a thread.
      * @param threadId of the thread that the posts will be retrieved from.
-     * @return a list of strings if the method succeeds, an empty list elsewise.
+     * @return a list of strings if the method succeeds, an empty list otherwise.
      */
     public List<String> getPostsInThread(int threadId) {
         List<String> postList = new ArrayList<>();
         try {
-            PreparedStatement newregStatement = conn.prepareStatement
+            PreparedStatement getPostsInThreadQuery = conn.prepareStatement
                     ("select post.Post_Id, post.PostText, post.PostType, post.Creator \n" +
                             "from piazza.post inner join piazza.thread on post.Thread_Id = thread.Thread_Id \n" +
                             "where post.Thread_Id = ( ? ) \n" +
                             "order by post.Post_Id;");
-            newregStatement.setInt(1, threadId);
-            ResultSet rs = newregStatement.executeQuery();
+            getPostsInThreadQuery.setInt(1, threadId);
+            ResultSet rs = getPostsInThreadQuery.executeQuery();
             while (rs.next()) {
                 postList.add(   "post id: " + rs.getInt(1) +
                         " text: " + rs.getString(2) +
@@ -376,7 +354,7 @@ public class PiazzaCtrl extends DBConn {
             ResultSet postId = postInThread.executeQuery();
             if (postId.next()){
                 postID = postId.getInt(1);
-            };
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -391,11 +369,11 @@ public class PiazzaCtrl extends DBConn {
      */
     public boolean makeThread(String title, int folderId) {
         try {
-            PreparedStatement newregStatement = conn.prepareStatement
+            PreparedStatement makeThreadStatement = conn.prepareStatement
                     ("insert into piazza.thread (Title, Folder_Id) values( (?), (?) )");
-            newregStatement.setString(1, title);
-            newregStatement.setInt(2, folderId);
-            newregStatement.execute();
+            makeThreadStatement.setString(1, title);
+            makeThreadStatement.setInt(2, folderId);
+            makeThreadStatement.execute();
             // Proceeds to find latest Thread_Id
             PreparedStatement statement = conn.prepareStatement
                     ("select Thread_Id from piazza.thread where Thread_Id = (select LAST_INSERT_ID())");
@@ -420,14 +398,14 @@ public class PiazzaCtrl extends DBConn {
      */
     public Integer makePost(String postText, String colourCode, String postType, int threadId, String creator) {
         try {
-            PreparedStatement newregStatement = conn.prepareStatement
+            PreparedStatement makePostStatement = conn.prepareStatement
                     ("insert into piazza.post (PostText, ColourCode, PostType, Thread_Id, Creator) values( (?), (?), (?), (?), (?) )");
-            newregStatement.setString(1, postText);
-            newregStatement.setString(2, colourCode);
-            newregStatement.setString(3, postType);
-            newregStatement.setInt(4, threadId);
-            newregStatement.setString(5, creator);
-            newregStatement.execute();
+            makePostStatement.setString(1, postText);
+            makePostStatement.setString(2, colourCode);
+            makePostStatement.setString(3, postType);
+            makePostStatement.setInt(4, threadId);
+            makePostStatement.setString(5, creator);
+            makePostStatement.execute();
             // Draws out the postId of the last post
             PreparedStatement statement = conn.prepareStatement
                     ("select Post_Id from piazza.post where Post_Id = (select LAST_INSERT_ID())");
@@ -452,12 +430,12 @@ public class PiazzaCtrl extends DBConn {
             for (String tag: tags) {
                 makeTag(tag);
             }
-            PreparedStatement newregStatement = conn.prepareStatement
+            PreparedStatement connectTagsStatement = conn.prepareStatement
                     ("insert into piazza.tags ( Description, Post_Id) values( (?), (?) )");
             for (String tag: tags) {
-                newregStatement.setString(1, tag);
-                newregStatement.setInt(2, postId);
-                newregStatement.execute();
+                connectTagsStatement.setString(1, tag);
+                connectTagsStatement.setInt(2, postId);
+                connectTagsStatement.execute();
             }
             return true;
         } catch (SQLException e) {
@@ -474,13 +452,13 @@ public class PiazzaCtrl extends DBConn {
     public Integer findThreadIdFromPostId(int postId) {
         Integer threadId = null;
         try {
-            PreparedStatement newregStatement = conn.prepareStatement(
+            PreparedStatement findThreadIdFromPostQuery = conn.prepareStatement(
                     "select post.Thread_Id\n" +
                             "from piazza.post\n" +
                             "where post.Post_Id = ( ? );"
             );
-            newregStatement.setInt(1, postId);
-            ResultSet rs = newregStatement.executeQuery();
+            findThreadIdFromPostQuery.setInt(1, postId);
+            ResultSet rs = findThreadIdFromPostQuery.executeQuery();
             rs.next();
             threadId = rs.getInt(1);
         } catch (SQLException e) {

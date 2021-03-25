@@ -1,27 +1,32 @@
 @startuml
 box "Make Post" #lightgreen
 participant Actor
-Actor -> App : create_post \n(postText \n colourCode \n postType \n threadId \n creator)
+Actor -> App : create_post
 activate App
-App -> MakePost : showFolders
-activate MakePost
-MakePost --> App
-deactivate MakePost
-App -> MakePost : makeThread
-activate MakePost
-MakePost --> App
-deactivate MakePost
-App -> MakePost : makePost
-activate MakePost
-MakePost --> App
-deactivate MakePost
-App -> MakePost : connectTagsAndPost
-activate MakePost
-MakePost -> MakePost : makeTag
-activate MakePost
-MakePost --> MakePost
-deactivate MakePost
-MakePost --> App
-deactivate MakePost 
+App ->  PiazzaCtrl: showFolders
+activate PiazzaCtrl
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App --> Actor
+Actor -> App: input choose Folder
+Actor -> App: input title and text
+App -> PiazzaCtrl : makeThread
+activate PiazzaCtrl
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App -> PiazzaCtrl : makePost
+activate PiazzaCtrl
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
+App --> Actor
+Actor -> App: input tags
+App -> PiazzaCtrl : connectTagsAndPost
+activate PiazzaCtrl
+PiazzaCtrl -> PiazzaCtrl : makeTag
+activate PiazzaCtrl
+PiazzaCtrl --> PiazzaCtrl
+deactivate PiazzaCtrl
+PiazzaCtrl --> App
+deactivate PiazzaCtrl
 return
 @enduml
